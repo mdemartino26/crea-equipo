@@ -1,0 +1,9 @@
+
+.decor-background {
+    background-image: url('../../assets/img/diseño2.png'); /* Ruta a tu imagen de fondo */
+    background-repeat: no-repeat;
+    height: 100vh; /* Altura igual al 100% del viewport height */
+    background-position-x: 62%;
+    background-position-y: 2rem;
+    background-size: contain;
+  }

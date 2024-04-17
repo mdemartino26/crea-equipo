@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
+import Decor from '../../components/decor/decor';
 
 function Reglas() {
     
@@ -16,7 +17,8 @@ function Reglas() {
                 <li>Tienen que observar bien</li>
                 <li>¡Diviertanse!</li>
             </ul>
-            <Link to="/numero1"><button>Siguiente</button></Link>
+            <Link to="/numero1"><button class="buttonPpal">Siguiente</button></Link>
+            <Decor/>
         </div>
     );
 }
