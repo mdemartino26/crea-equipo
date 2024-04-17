@@ -1,0 +1,14 @@
+.slick-dots{
+    display: none !important;
+}
+
+button.slick-arrow{
+    padding-top: none !important;
+}
+.slick-arrow{
+    background-color: red !important;
+}
+
+#fotosParrafo{
+    text-align: -webkit-center;
+}
