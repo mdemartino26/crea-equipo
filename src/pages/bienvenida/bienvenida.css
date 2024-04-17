@@ -7,6 +7,16 @@
     background-size: contain;
   }
 
+  .bienvenida-background2 {
+    background-image: url('../../assets/img/diseño1.png'); /* Ruta a tu imagen de fondo */
+    background-repeat: no-repeat;
+    height: 100vh; /* Altura igual al 100% del viewport height */
+    background-position-x: 62%;
+    background-position-y: 0rem;
+    background-size: contain;
+  }
+
+
   h2{
     font-size: 1em;
     font-weight: 500;
