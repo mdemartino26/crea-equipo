@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import fotoBaul from '../../assets/img/baul.jpeg'
 import { Link } from 'react-router-dom';
+import Header2 from '../../components/header2/header2';
+import Decor2 from '../../components/decor2/decor2';
+import './numero7.css';
 
 function Numero7() {
     const [respuesta, setRespuesta] = useState('');
@@ -26,9 +29,10 @@ function Numero7() {
     };
 
     return (
-        <div>
-            
-            <img src={fotoBaul} alt="Imagen" />
+        <div className='overf'>
+            <Header2/>
+            <div className="main">
+            <img src={fotoBaul} alt="Imagen" className='imagen'/>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -37,17 +41,23 @@ function Numero7() {
                     placeholder="Ingrese su respuesta"
                 />
                 {error && <p style={{ color: 'red' }}>Respuesta incorrecta. Intente de nuevo.</p>}
-                <button type="submit">Enviar</button>
-            </form>
-            {respuestaCorrecta && (
+                <br />
+                {!respuestaCorrecta && <button type="submit" className='buttonPpal'>Enviar</button>}
+                {respuestaCorrecta && (
                 <Link to="/numero8">
-                    <button>Continuar</button>
+                    <button className='buttonPpal'>Continuar</button>
                 </Link>
             )}
+            </form>
+            
+           
+            </div>
+            <Decor2/>
         </div>
     );
     
 }
 
 export default Numero7;
+
 

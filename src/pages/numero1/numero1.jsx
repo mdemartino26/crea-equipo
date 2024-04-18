@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
+import './numero1.css';
+import Decor from '../../components/decor/decor';
 
 function Numero1() {
     const [respuesta, setRespuesta] = useState('');
@@ -28,9 +30,10 @@ function Numero1() {
     };
 
     return (
-        <div>
+        <div >
             <Header2 />
-            <p>Ellas son blancas. Intentan con todas sus fuerzas unirse, pero no lo logran.</p>
+            <div className='main'>
+            <p>Ellas son blancas. Intentan con todas sus fuerzas unirse, pero no lo logran. (número)</p>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -40,7 +43,7 @@ function Numero1() {
                 />
                 <br />
                 {mostrarSiguiente && <button type="submit" class="buttonPpal" >Siguiente</button>}
-            </form>
+          
             {error && <p style={{ color: 'red' }}>Respuesta incorrecta. Intente de nuevo.</p>}
             {respuestaCorrecta && (
                 <>
@@ -49,7 +52,9 @@ function Numero1() {
                         <button class="buttonPpal" >Continuar</button>
                     </Link>
                 </>
-            )}
+            )}</form>
+            </div>
+            <Decor/>
         </div>
     );
 }

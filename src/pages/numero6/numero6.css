@@ -12,3 +12,9 @@ button.slick-arrow{
 #fotosParrafo{
     text-align: -webkit-center;
 }
+
+#clave{
+    display: flex;
+    font-size: 0.75em;
+    justify-content: space-between;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
 import Decor from '../../components/decor/decor';
+import './reglas.css'
 
 function Reglas() {
     

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Header2 from '../../components/header2/header2';
 
 function Numero9() {
     const [respuesta, setRespuesta] = useState('');
@@ -25,6 +26,8 @@ function Numero9() {
 
     return (
         <div>
+            <Header2/>
+            <div className="main">
             <p>Levanten sus consignas. Las necesitarán para pasar a la próxima pista.</p>
             <form onSubmit={handleSubmit}>
                 <input
@@ -42,6 +45,7 @@ function Numero9() {
                     <button>Continuar</button>
                 </Link>
             )}
+            </div>
         </div>
     );
 }

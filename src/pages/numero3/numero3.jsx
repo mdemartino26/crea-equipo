@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../../components/header/header';
+import Header2 from '../../components/header2/header2';
+import Decor from '../../components/decor/decor';
+import './numero3.css';
 
 function Numero3() {
     const [respuesta, setRespuesta] = useState('');
@@ -34,14 +36,18 @@ function Numero3() {
 
     const handleMostrarPista = () => {
         setMostrarPista(true);
+        setTimeout(() => {
+            setMostrarPista(false);
+        }, 3000); // 3000 milliseconds = 3 seconds
     };
 
     return (
         <div>
-            <Header />
+            <Header2 />
+            <div className="main">
             <p>Si continúan caminando, se encontrarán con dos ciudades enverdecidas.</p>
             <form onSubmit={handleSubmit}>
-                <button type="button" onClick={handleMostrarPista}>Pista</button>
+                <button type="button" onClick={handleMostrarPista} className='buttonPista'>Pista</button>
                 {mostrarPista && <p>3 palabras</p>}
                 <br />
                 <input
@@ -60,6 +66,8 @@ function Numero3() {
                     </Link>
                 )}
             </form>
+            </div>
+            <Decor/>
         </div>
     );
 }

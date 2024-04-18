@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import berniFoto from '../../assets/img/Berni.jpg';
 import Header2 from '../../components/header2/header2';
 import './numero5.css';
+import Decor from '../../components/decor/decor';
 
 function Numero5() {
     const [respuesta, setRespuesta] = useState('');
@@ -28,8 +29,9 @@ function Numero5() {
     };
 
     return (
-        <div>
+        <div id='n5'>
             <Header2 />
+            <div className="main">
             <p>El agua te lleva hasta Ramona, que intentará tentarlos con todas sus fuerzas ¿Quién le dio vida?</p>
 
             <img src={berniFoto} alt="La tentacion - Berni" />
@@ -50,6 +52,8 @@ function Numero5() {
                     </Link>
                 )}
             </form>
+            </div>
+            <Decor/>
         </div>
     );
 }

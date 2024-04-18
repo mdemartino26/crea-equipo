@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
+import Decor from '../../components/decor/decor';
 
 function Numero2() {
     const [respuesta, setRespuesta] = useState('');
@@ -30,6 +31,7 @@ function Numero2() {
     return (
         <div>
             <Header2 />
+            <div className="main">
             <p>Qué obra icónica vienen <strong>TODOS</strong> los turistas brasileros a ver al <strong>MALBA</strong>? Está cerca del inicio de la obra anterior.</p>
             <form onSubmit={handleSubmit}>
                 <input
@@ -40,7 +42,7 @@ function Numero2() {
                 />
                 <br />
                 {mostrarSiguiente && <button type="submit" class="buttonPpal" >Siguiente</button>}
-            </form>
+            
             {error && <p style={{ color: 'red' }}>Respuesta incorrecta. Intente de nuevo.</p>}
             {respuestaCorrecta && (
                 <>
@@ -49,7 +51,9 @@ function Numero2() {
                         <button class="buttonPpal" >Continuar</button>
                     </Link>
                 </>
-            )}
+            )}</form>
+            </div>
+            <Decor/>
         </div>
     );
 }

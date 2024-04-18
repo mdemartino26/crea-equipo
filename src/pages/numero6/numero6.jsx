@@ -46,46 +46,59 @@ function Numero6() {
     return (
         <div>
             <Header2/>
-            <p>
-                Escribir en hasta 280 caracteres un párrafo coherente a partir de los sustantivos de estas 2/3 obras.
-            </p>
-            <div id='fotosParrafo'>
-            <Slider {...settings}>
-                <div>
-                    <img src={obra1} alt="la-cancion-del-pueblo"/>
-                </div>
-                <div>
-                    <img src={obra2} alt="circo-mas-lindo-del-mundo"/>
-                </div>
-                <div>
-                    <img src={obra3} alt="quiosco de canaletas"/>
-                </div>
-            </Slider>
-            </div>
-            <form onSubmit={handleSubmit}>
-                <textarea
-                    value={respuesta}
-                    onChange={handleChange}
-                    placeholder="Escribí tu respuesta acá"
-                    rows={10}
-                    cols={50}
-                />
-                <div>Contador de palabras: {contadorPalabras}/280</div>
-                <button type="submit" className="buttonPpal" >Enviar</button>
-            </form>
-            {error && (
-                <p style={{ color: 'red' }}>
-                    La respuesta debe incluir todas las palabras clave. Intentá de nuevo.
+            <div className="main">
+                <p>
+                    Escribir en hasta 280 caracteres un párrafo coherente a partir de los sustantivos de estas 2/3 obras.
                 </p>
-            )}
-            <div>
-                <strong>Respuesta:</strong> {respuesta.split(' ').map((palabra, index) => {
-                    const palabraFormateada = palabra.toLowerCase().replace(/[^a-zA-Z]/g, '');
-                    if (palabrasClave.includes(palabraFormateada)) {
-                        return <strong key={index}>{palabra} </strong>;
-                    }
-                    return palabra + ' ';
-                })}
+                <div id='fotosParrafo'>
+                    <Slider {...settings}>
+                        <div>
+                            <img src={obra1} alt="la-cancion-del-pueblo"/>
+                        </div>
+                        <div>
+                            <img src={obra2} alt="circo-mas-lindo-del-mundo"/>
+                        </div>
+                        <div>
+                            <img src={obra3} alt="quiosco de canaletas"/>
+                        </div>
+                    </Slider>
+                </div>
+                <div>
+                    <strong>Palabras clave:</strong>
+                    <ul id='claves'>
+                        {palabrasClave.map((palabra, index) => (
+                            <li key={index} style={{ textDecoration: respuesta.toLowerCase().includes(palabra) ? 'line-through' : 'none' }}>
+                                {palabra}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div>Contador de palabras: {contadorPalabras}/280</div>
+                <form onSubmit={handleSubmit}>
+                    <textarea
+                        value={respuesta}
+                        onChange={handleChange}
+                        placeholder="Escribí tu respuesta acá"
+                        rows={10}
+                        cols={50}
+                    />
+                    <button type="submit" className="buttonPpal">Enviar</button>
+                </form>
+                {error && (
+                    <p style={{ color: 'red' }}>
+                        La respuesta debe incluir todas las palabras clave. Intentá de nuevo.
+                    </p>
+                )}
+                
+              {/*  <div>
+                    <strong>Respuesta:</strong> {respuesta.split(' ').map((palabra, index) => {
+                        const palabraFormateada = palabra.toLowerCase().replace(/[^a-zA-Z]/g, '');
+                        if (palabrasClave.includes(palabraFormateada)) {
+                            return <strong key={index}>{palabra} </strong>;
+                        }
+                        return palabra + ' ';
+                    })}
+                </div>*/} 
             </div>
         </div>
     );
