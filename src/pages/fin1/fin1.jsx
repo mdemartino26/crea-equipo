@@ -18,9 +18,9 @@ function Fin1() {
             <img src={Sobre} alt="Felicitaciones" />
             <p>Gracias por participar</p>
             </div>
-            </div>
+            
             <Decor2/>
-       
+            </div>
         </>
     );
 }

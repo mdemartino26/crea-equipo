@@ -27,10 +27,11 @@ function Numero9() {
     };
 
     return (
-        <div>
+        <div className='overf'>
             <Header2/>
             <div className="main">
-                <p>Levanten sus consignas. Las necesitarán para pasar a la próxima pista.</p>
+                <p>Levanten sus consignas. <br />
+                Las necesitarán para pasar a la próxima pista.</p>
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"

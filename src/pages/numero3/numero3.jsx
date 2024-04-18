@@ -42,7 +42,7 @@ function Numero3() {
     };
 
     return (
-        <div>
+        <div className='overf'>
             <Header2 />
             <div className="main">
             <p>Si continúan caminando, se encontrarán con dos ciudades enverdecidas.</p>

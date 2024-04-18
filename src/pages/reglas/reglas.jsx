@@ -9,7 +9,7 @@ function Reglas() {
 
     return (
 
-        <div>
+        <div className='overf'>
             <Header2 />
             <h1>Reglas</h1>
             <ul>

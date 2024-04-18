@@ -5,7 +5,7 @@ import Header2 from '../../components/header2/header2';
 
 function Numero8() {
     return (
-        <div>
+        <div className='overf'>
             <Header2/>
             <div className="main">
             <p>Dejando atrás el candombe, un nuevo desafío encontrarán. ¡No pierdan la cabeza pues la necesitarán!</p>
