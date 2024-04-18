@@ -1,0 +1,9 @@
+.confetti{
+    background-image: url(../../assets/img/sparkle-confetti\ \(1\).gif);
+    background-repeat: no-repeat;
+}
+
+.mainHeight{
+    height: 42vh;
+    align-content: center;
+}

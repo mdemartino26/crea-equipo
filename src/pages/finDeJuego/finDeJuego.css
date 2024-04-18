@@ -1,0 +1,12 @@
+.confetti2{
+    background-image: url(../../assets/img/confetti.gif);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    height: 100vh;
+}
+
+.mainHeight{
+    height: 42vh;
+    align-content: center;
+}

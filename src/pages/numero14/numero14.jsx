@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Header2 from '../../components/header2/header2';
 
 function Numero14() {
     const [answer, setAnswer] = useState('');
@@ -24,6 +25,8 @@ function Numero14() {
 
     return (
         <div>
+            <Header2/>
+            <div className="main">
             <h2>Normalmente está en una iglesia, pero no hay remedio. Ha abandonado las estrellas para instalarse en el Malba.</h2>
             <p>¿De qué obra se trata?</p>
             <input
@@ -34,7 +37,8 @@ function Numero14() {
             />
             <br />
             {showMessage && <p style={{ color: 'red' }}>Respuesta incorrecta</p>}
-            <button onClick={checkAnswer}>Continuar</button>
+            <button className='buttonPpal' onClick={checkAnswer}>Continuar</button>
+        </div>
         </div>
     );
 }

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Header2 from '../../components/header2/header2';
+import './finDeJuego.css';
 
 function FinDeJuego() {
     const respuestaGuardada = localStorage.getItem('respuestaNumero6');
@@ -13,15 +15,18 @@ function FinDeJuego() {
     };
 
     return (
-        <div>
+        <div className='confetti2'>
+            <Header2/>
+            <div className="main">
             <h2>Felicitaciones! han ganado el juego :)</h2>
-            {!mostrarRespuestas && <button onClick={handleVerRespuestas}>Ver respuestas</button>}
+            {!mostrarRespuestas && <button onClick={handleVerRespuestas} className='buttonPpal'>Ver respuestas</button>}
             {mostrarRespuestas && (
                 <div>
                     <p>{respuestaGuardada}</p>
-                    <button onClick={handleOcultarRespuestas}>Ocultar respuestas</button>
+                    <button className='buttonPpal' onClick={handleOcultarRespuestas}>Ocultar respuestas</button>
                 </div>
             )}
+        </div>
         </div>
     );
 }

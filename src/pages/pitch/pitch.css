@@ -1,0 +1,14 @@
+.timer {
+    font-size: 4rem; /* Tamaño grande */
+    background-color: white; /* Color de fondo inicial */
+    animation: blink 0.25s infinite alternate; /* Animación de parpadeo */
+}
+
+@keyframes blink {
+    from {
+        background-color: white; /* Color de fondo inicial */
+    }
+    to {
+        background-color: red; /* Color de fondo final */
+    }
+}
