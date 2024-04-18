@@ -29,7 +29,7 @@ function Numero2() {
     };
 
     return (
-        <div>
+        <div className='overf'>
             <Header2 />
             <div className="main">
             <p>Qué obra icónica vienen <strong>TODOS</strong> los turistas brasileros a ver al <strong>MALBA</strong>? Está cerca del inicio de la obra anterior.</p>
