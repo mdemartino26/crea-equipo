@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Header2 from '../../components/header2/header2';
+import './numero10.css';
 
 function Numero10() {
     const [respuesta, setRespuesta] = useState('');
@@ -11,25 +13,32 @@ function Numero10() {
             // Continuar a la página Numero11
             console.log('Continuar a Numero11');
         } else {
-            // Permanecer en la página Numero10
-            console.log('Permanecer en Numero10');
+            // Recargar la página para permanecer en la página Numero10
+            window.location.reload();
         }
     };
 
     return (
         <div>
-            <p>Cómo le vendemos al cliente una obra que pudo haber hecho nuestro sobrino?</p>
-            <p>Condición: NO USAR CONCEPTOS ARTÍSTICOS</p>
-            {showPopup && (
-                <div className="popup">
-                    <p>¿Ya armaron el pitch de venta? Lo necesitarán luego!</p>
-                    <Link to="/numero11"> <button>Si</button> </Link>
-                    <Link to="/numero10"> <button>No</button></Link>
-                </div>
-            )}
-            {!showPopup && (
-                <button onClick={() => setShowPopup(true)}>Responder</button>
-            )}
+            <Header2/>
+            <div className="main">
+                {!showPopup && (
+                    <div>
+                        <p>Cómo le vendemos al cliente una obra que pudo haber hecho nuestro sobrino?</p>
+                        <p>Condición: NO USAR CONCEPTOS ARTÍSTICOS</p>
+                        <button onClick={() => setShowPopup(true)} className='buttonPpal'>Responder</button>
+                    </div>
+                )}
+                {showPopup && (
+                    <div className="popup">
+                        <p>¿Ya armaron el pitch de venta? Lo necesitarán luego!</p>
+                        <div id='botones'>
+                            <Link to="/numero11"><button className='buttonConfirmar'>Si</button></Link>
+                            <button onClick={() => handlePopupSubmit('no')} className='buttonNoConfirmar'>No</button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
