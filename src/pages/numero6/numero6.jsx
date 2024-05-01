@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Slider from 'react-slick';
 import obra1 from '../../assets/img/la-cancion-del-pueblo.jpg';
 import obra2 from '../../assets/img/circo.jpg';
@@ -7,11 +7,15 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Header2 from '../../components/header2/header2';
 import './numero6.css';
+import CorrectSound from '../../assets/sounds/correct.mp3';
+import WrongSound from '../../assets/sounds/wrong.mp3';
 
 function Numero6() {
     const [respuesta, setRespuesta] = useState('');
     const [error, setError] = useState(false);
     const palabrasClave = ['quiosco', 'cancion', 'pueblo', 'circo', 'canaletas', 'mundo'];
+    const correctSoundRef = useRef(null);
+    const wrongSoundRef = useRef(null);
 
     const handleChange = (event) => {
         const texto = event.target.value;
@@ -24,12 +28,15 @@ function Numero6() {
 
         if (palabrasClave.every((palabra) => respuesta.toLowerCase().includes(palabra))) {
             // Correct answer, allow to advance
+            correctSoundRef.current.play();
             console.log('Respuesta correcta');
+            
             localStorage.setItem('respuestaNumero6', respuesta);
             window.location.href = '/numero7';
         } else {
             // Incorrect answer, show error
             setError(true);
+            wrongSoundRef.current.play();
         }
     };
 
@@ -73,7 +80,7 @@ function Numero6() {
                         ))}
                     </ul>
                 </div>
-                <div>Contador de palabras: {contadorPalabras}/280</div>
+               
                 <form onSubmit={handleSubmit}>
                     <textarea
                         value={respuesta}
@@ -82,7 +89,9 @@ function Numero6() {
                         rows={10}
                         cols={50}
                     />
-                    <button type="submit" className="buttonPpal">Enviar</button>
+                     <div>Contador de palabras: {contadorPalabras}/280</div>
+                    <button type="submit" className="buttonPpal">Enviar</button>  <br />
+            <br />
                 </form>
                 {error && (
                     <p style={{ color: 'red' }}>
@@ -90,16 +99,10 @@ function Numero6() {
                     </p>
                 )}
                 
-              {/*  <div>
-                    <strong>Respuesta:</strong> {respuesta.split(' ').map((palabra, index) => {
-                        const palabraFormateada = palabra.toLowerCase().replace(/[^a-zA-Z]/g, '');
-                        if (palabrasClave.includes(palabraFormateada)) {
-                            return <strong key={index}>{palabra} </strong>;
-                        }
-                        return palabra + ' ';
-                    })}
-                </div>*/} 
             </div>
+          
+            <audio ref={correctSoundRef} src={CorrectSound}></audio>
+            <audio ref={wrongSoundRef} src={WrongSound}></audio>
         </div>
     );
 }

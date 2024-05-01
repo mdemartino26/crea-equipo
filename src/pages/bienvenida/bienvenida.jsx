@@ -7,7 +7,7 @@ function Bienvenida() {
     
 
     return (
-        <div className='bienvenida-background'>
+        <div className='bienvenida-background overf' >
              <Header />
             <h2>Team building + museo + gamificación</h2>
             <Link to="/reglas"><button class="buttonPpal" >Comenzar</button></Link>

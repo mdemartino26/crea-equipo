@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
 import Decor from '../../components/decor/decor';
 import './numero3.css';
+import CorrectSound from '../../assets/sounds/correct.mp3';
+import WrongSound from '../../assets/sounds/wrong.mp3';
 
 function Numero3() {
     const [respuesta, setRespuesta] = useState('');
     const [error, setError] = useState(false);
     const [mostrarPista, setMostrarPista] = useState(false);
     const [respuestaCorrecta, setRespuestaCorrecta] = useState(false);
+    const correctSoundRef = useRef(null);
+    const wrongSoundRef = useRef(null);
 
     const handleChange = (event) => {
         setRespuesta(event.target.value);
@@ -28,9 +32,11 @@ function Numero3() {
             // Correct answer, allow to advance
             console.log('Respuesta correcta');
             setRespuestaCorrecta(true);
+            correctSoundRef.current.play();
         } else {
             // Incorrect answer, show error
             setError(true);
+            wrongSoundRef.current.play();
         }
     };
 
@@ -68,6 +74,8 @@ function Numero3() {
             </form>
             </div>
             <Decor/>
+            <audio ref={correctSoundRef} src={CorrectSound}></audio>
+            <audio ref={wrongSoundRef} src={WrongSound}></audio>
         </div>
     );
 }

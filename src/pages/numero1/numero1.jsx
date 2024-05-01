@@ -36,7 +36,7 @@ function Numero1() {
     };
 
     return (
-        <div>
+        <div className='overf'>
             <Header2 />
             <div className='main'>
                 <p>Ellas son blancas. Intentan con todas sus fuerzas unirse, pero no lo logran. (número)</p>

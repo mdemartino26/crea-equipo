@@ -29,6 +29,7 @@ function Numero11() {
                 <button disabled={wordCount < 3} className='buttonPpal'>Continuar</button>
             </Link>
             </div>
+            
         </div>
     );
 }

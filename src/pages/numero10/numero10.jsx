@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
 import './numero10.css';
+import FotoCuadro from '../../assets/img/foto.jpg'
 
 function Numero10() {
     const [respuesta, setRespuesta] = useState('');
@@ -26,6 +27,8 @@ function Numero10() {
                     <div>
                         <p>Cómo le vendemos al cliente una obra que pudo haber hecho nuestro sobrino?</p>
                         <p>Condición: NO USAR CONCEPTOS ARTÍSTICOS</p>
+                        <img src={FotoCuadro} alt="Foto a cambiar" />
+                        <br />
                         <button onClick={() => setShowPopup(true)} className='buttonPpal'>Responder</button>
                     </div>
                 )}
