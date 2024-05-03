@@ -3,7 +3,7 @@ import Header2 from '../../components/header2/header2';
 import Decor2 from '../../components/decor2/decor2';
 import './fin1.css';
 import Premio from '../../assets/img/award.svg';
-import PremioSound from '../../assets/sounds/prize.mp3'; // Asegúrate de que la ruta al archivo de sonido sea correcta
+import PremioSound from '../../assets/sounds/prize.mp3'; 
 
 function Fin1() {
     const prizeSoundRef = useRef(null);

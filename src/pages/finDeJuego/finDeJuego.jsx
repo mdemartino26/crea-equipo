@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Header2 from '../../components/header2/header2';
 import './finDeJuego.css';
+import PremioSound from '../../assets/sounds/prize.mp3'; 
 
 function FinDeJuego() {
     const respuestaGuardada = localStorage.getItem('respuestaNumero6');
     const [mostrarRespuestas, setMostrarRespuestas] = useState(false);
+    const prizeSoundRef = useRef(null);
 
     const handleVerRespuestas = () => {
         setMostrarRespuestas(true);
@@ -13,6 +15,11 @@ function FinDeJuego() {
     const handleOcultarRespuestas = () => {
         setMostrarRespuestas(false);
     };
+
+    useEffect(() => {
+        prizeSoundRef.current.play();
+    }, []);
+
 
     return (
         <div className='confetti2'>
@@ -27,6 +34,7 @@ function FinDeJuego() {
                 </div>
             )}
         </div>
+        <audio ref={prizeSoundRef} src={PremioSound}></audio>
         </div>
     );
 }

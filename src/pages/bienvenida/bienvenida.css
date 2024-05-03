@@ -1,3 +1,12 @@
+@font-face {
+  font-family: 'Opificio_regular';
+  src: url('../../assets/fonts/Opificio_regular.ttf') format('truetype');
+}
+
+body {
+  font-family: 'Opificio_regular', sans-serif;
+}
+
 .bienvenida-background {
     background-image: url('../../assets/img/diseño1.png'); /* Ruta a tu imagen de fondo */
     background-repeat: no-repeat;

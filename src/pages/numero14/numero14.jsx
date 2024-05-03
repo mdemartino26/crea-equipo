@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState,  useRef } from 'react';
 import Header2 from '../../components/header2/header2';
+import CorrectSound from '../../assets/sounds/correct.mp3';
+import WrongSound from '../../assets/sounds/wrong.mp3';
 
 function Numero14() {
     const [answer, setAnswer] = useState('');
     const [showMessage, setShowMessage] = useState(false);
+    const wrongSoundRef = useRef(null);
 
     const checkAnswer = () => {
         if (answer.trim().toLowerCase() === 'constelaciones') {
@@ -12,6 +15,7 @@ function Numero14() {
         } else {
             // Respuesta incorrecta, mostrar mensaje
             setShowMessage(true);
+            wrongSoundRef.current.play();
         }
     };
 
@@ -39,6 +43,7 @@ function Numero14() {
             {showMessage && <p style={{ color: 'red' }}>Respuesta incorrecta</p>}
             <button className='buttonPpal' onClick={checkAnswer}>Continuar</button>
         </div>
+        <audio ref={wrongSoundRef} src={WrongSound}></audio>
         </div>
     );
 }

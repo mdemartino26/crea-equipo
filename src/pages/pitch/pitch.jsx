@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header2 from "../../components/header2/header2";
 import "./pitch.css";
+import PitchGif from "../../assets/img/pitch.gif"
 
 function Pitch() {
   const [stage, setStage] = useState("presentacion");
@@ -46,15 +47,16 @@ function Pitch() {
               elegirán al ganador. Este tendrá ventaja para emprender el último
               desafío.
             </p>
+            <img src={PitchGif} alt="" />
             <p>¿Ya expusieron?</p>
             <div id="botones">
               <button
                 onClick={() => setStage("ganaron")}
                 className="buttonConfirmar"
               >
-                Sí
+                Continuar
               </button>
-              <button className="buttonNoConfirmar">No</button>
+        
             </div>
           </div>
         )}
