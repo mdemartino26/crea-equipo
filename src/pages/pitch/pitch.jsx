@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header2 from "../../components/header2/header2";
 import "./pitch.css";
 import PitchGif from "../../assets/img/pitch.gif"
+import Decor from "../../components/decor/decor";
 
 function Pitch() {
   const [stage, setStage] = useState("presentacion");
@@ -36,7 +37,7 @@ function Pitch() {
   };
 
   return (
-    <div>
+    <div className="overf">
       <Header2 />
       <div className="main">
         {stage === "presentacion" && (
@@ -62,7 +63,12 @@ function Pitch() {
         )}
         {stage === "ganaron" && (
           <div>
+            <br />
+            <br />
+
             <p>¿Ganaron?</p>
+            <br />
+            <br />
             <div id="botones">
               <button
                 onClick={() => setStage("timer")}
@@ -73,15 +79,31 @@ function Pitch() {
               <Link to="/numero14">
                 <button className="buttonConfirmar">Sí</button>
               </Link>
+          
             </div>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
           </div>
+          
         )}
         {stage === "timer" && (
           <div>
+             <br />
+            <br />
+            <br />
             <p className="timer">{timer}</p>
+           
+            <br />
+            <br />
+            <br />
           </div>
         )}
       </div>
+      <Decor/>
     </div>
   );
 }

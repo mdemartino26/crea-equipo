@@ -1,7 +1,7 @@
 import React, { useState,  useRef } from 'react';
 import Header2 from '../../components/header2/header2';
-import CorrectSound from '../../assets/sounds/correct.mp3';
 import WrongSound from '../../assets/sounds/wrong.mp3';
+import Decor from '../../components/decor/decor';
 
 function Numero14() {
     const [answer, setAnswer] = useState('');
@@ -44,6 +44,7 @@ function Numero14() {
             <button className='buttonPpal' onClick={checkAnswer}>Continuar</button>
         </div>
         <audio ref={wrongSoundRef} src={WrongSound}></audio>
+        <Decor/>
         </div>
     );
 }

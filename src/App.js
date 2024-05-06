@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Redirect } from 'react-router-dom';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import './App.css';
 import Bienvenida from './pages/bienvenida/bienvenida'; 
 import Reglas from './pages/reglas/reglas'; 
