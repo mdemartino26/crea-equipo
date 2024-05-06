@@ -25,12 +25,15 @@ function FinDeJuego() {
         <div className='confetti2'>
             <Header2/>
             <div className="main">
-            <h2>Felicitaciones! han ganado el juego :)</h2>
+            <h1> <strong>¡Felicitaciones! <br /> Han ganado el juego :)</strong></h1>
             {!mostrarRespuestas && <button onClick={handleVerRespuestas} className='buttonPpal'>Ver respuestas</button>}
             {mostrarRespuestas && (
                 <div>
-                    <p>{respuestaGuardada}</p>
                     <button className='buttonPpal' onClick={handleOcultarRespuestas}>Ocultar respuestas</button>
+                    <br />
+                    <br /><br />
+                    <p>{respuestaGuardada}</p>
+                    
                 </div>
             )}
         </div>
