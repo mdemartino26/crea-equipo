@@ -31,6 +31,10 @@ body {
     font-weight: 500;
   }
 
+  p{
+    font-size: 0.75em;
+  }
+
  
 .buttonPpal {
     margin-top: 10%;
@@ -67,4 +71,14 @@ body {
 
 .buttonPpal:active {
   opacity: .5;
+}
+
+.decoration{
+
+    position: fixed;
+    top: 70%;
+    width: 100%;
+    background-size: contain;
+    z-index: -1;
+    bottom: 0px;
 }

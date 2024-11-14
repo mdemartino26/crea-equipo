@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
-import './numero13.css';
+
 import Decor from '../../components/decor/decor';
 
 function Numero13() {

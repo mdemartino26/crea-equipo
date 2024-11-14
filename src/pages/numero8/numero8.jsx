@@ -1,19 +1,44 @@
-import React from 'react';
-import relojDeArena from '../../assets/img/reloj-de-arena.gif';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
 
 function Numero8() {
+    const [respuesta, setRespuesta] = useState('');
+    const [error, setError] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+
+    const handlePopupSubmit = (respuestaPopup) => {
+        if (respuestaPopup === 'si') {
+            // Continuar a la página Numero11
+            console.log('Continuar a Numero11');
+        } else {
+            // Recargar la página para permanecer en la página Numero10
+            window.location.reload();
+        }
+    };
+
     return (
-        <div className='overf'>
+        <div>
             <Header2/>
             <div className="main">
-            <p>Dejando atrás el candombe, un nuevo desafío encontrarán. ¡No pierdan la cabeza pues la necesitarán!</p>
-            <img src={relojDeArena} alt="Reloj de arena" />
-            <br />
-            <Link to="/numero9">
-                <button className='buttonPpal'>Continuar</button>
-            </Link>
+                {!showPopup && (
+                    <div>
+                        <p>Misión: lograr que una Kardashian compre tres botellas de Coca Cola para decorar su living</p>
+                        <p>Armar pitch de venta</p>
+                       
+                        <br />
+                        <button onClick={() => setShowPopup(true)} className='buttonPpal'>Responder</button>
+                    </div>
+                )}
+                {showPopup && (
+                    <div className="popup">
+                        <p>¿Ya armaron el pitch de venta? Lo necesitarán luego!</p>
+                        <div id='botones'>
+                            <Link to="/numero9"><button className='buttonConfirmar'>Si</button></Link>
+                            <button onClick={() => handlePopupSubmit('no')} className='buttonNoConfirmar'>No</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

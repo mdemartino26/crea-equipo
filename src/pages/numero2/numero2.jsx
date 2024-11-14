@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
-import Decor from '../../components/decor/decor';
+import Decor from '../../components/decor2/decor2';
 import CorrectSound from '../../assets/sounds/correct.mp3';
 import WrongSound from '../../assets/sounds/wrong.mp3';
 
@@ -52,10 +52,11 @@ function Numero2() {
             {error && <p style={{ color: 'red' }}>Respuesta incorrecta. Intente de nuevo.</p>}
             {respuestaCorrecta && (
                 <>
-                    <p style={{ color: 'green' }}>¡Correcto!</p>
+                    
                     <Link to="/numero3">
                         <button class="buttonPpal" >Continuar</button>
                     </Link>
+                    <p style={{ color: 'green' }}>¡Correcto!</p>
                 </>
             )}</form>
             </div>

@@ -7,3 +7,12 @@
 form{
     height: 20vh;
 }
+
+.deco{
+    position: fixed;
+    top: 70%;
+    width: 100%;
+    background-size: contain;
+    z-index: -1;
+    bottom: 0px;
+}

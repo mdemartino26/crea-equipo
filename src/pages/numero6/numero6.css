@@ -18,3 +18,12 @@ button.slick-arrow{
     font-size: 0.75em;
     justify-content: space-between;
 }
+
+#imagenes{
+    display: flex;
+    justify-content: space-between;
+}
+
+#imagenes img {
+    width: 25%;
+}
