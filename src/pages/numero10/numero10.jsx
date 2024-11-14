@@ -26,7 +26,7 @@ function Numero10() {
       
           <div>
             <p>
-            A mover el esqueleto. Elijan una obra de la sala de arte cinético
+          <strong>  A mover el esqueleto. </strong>Elijan una obra de la sala de arte cinético
               y fílmense haciendo una coreo entre TODOS inspirada en ella. (Máx
               20 segs)
             </p>

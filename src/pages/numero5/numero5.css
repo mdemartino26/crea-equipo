@@ -6,3 +6,12 @@ img{
     height: 100vh;
     overflow: hidden;
 }
+
+#imag{
+    display: flex;
+    justify-content: space-between;
+}
+
+#imag img{
+    width: 45%;
+}

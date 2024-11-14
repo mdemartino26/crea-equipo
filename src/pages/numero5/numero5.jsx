@@ -21,10 +21,11 @@ function Numero5() {
           <div id="uno">
             <p>Encuentren las obras a las que pertenecen estas imágenes.</p>
 
+<div id="imag">
             <img src={circo} alt="Circo mas lindo del mundo" />
             <img src={cancion} alt="Cancion del pueblo" />
-
-            <p>Muy bien!</p>
+            </div>
+            <p>¿Ya las encontraron? Continuemos</p>
 
             <button className="flechita" onClick={handleFlechitaClick}>
               ➔
@@ -34,7 +35,9 @@ function Numero5() {
           <div id="dos">
             <p>
               Entre todos los equipos, deben crear una historia coherente a partir
-              de los sustantivos de los títulos de las obras. Cada equipo colabora
+              de los sustantivos de los títulos de las obras.
+              <br/> 
+              <br/> Cada equipo colabora
               con un párrafo, que envía al grupo de WhatsApp.
             </p>
             <Link to="/numero6">

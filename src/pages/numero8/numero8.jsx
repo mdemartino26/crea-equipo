@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
+import Decor from "../../components/decor/decor";
 
 function Numero8() {
     const [respuesta, setRespuesta] = useState('');
@@ -32,7 +33,7 @@ function Numero8() {
                 )}
                 {showPopup && (
                     <div className="popup">
-                        <p>¿Ya armaron el pitch de venta? Lo necesitarán luego!</p>
+                        <p>¿Ya armaron el pitch de venta? <br /> <br />   ¡Lo necesitarán luego!</p>
                         <div id='botones'>
                             <Link to="/numero9"><button className='buttonConfirmar'>Si</button></Link>
                             <button onClick={() => handlePopupSubmit('no')} className='buttonNoConfirmar'>No</button>
@@ -40,6 +41,7 @@ function Numero8() {
                     </div>
                 )}
             </div>
+            <Decor/>
         </div>
     );
 }
