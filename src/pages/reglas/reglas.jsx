@@ -17,7 +17,7 @@ function Reglas() {
             <Header2 />
             <h1>Reglas</h1>
             <ul>
-                <li>Leer bien las consignas</li>
+                <li>Lean bien las consignas</li>
                 <li>Si se traban, pueden consutlar</li>
                 <li>Tienen que observar bien</li>
                 <li>¡Diviertanse!</li>
