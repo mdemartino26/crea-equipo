@@ -5,6 +5,17 @@ import './numero12.css';
 import Decor from '../../components/decor/decor';
 
 function Numero12() {
+
+    const handleClick = () => {
+        localStorage.setItem('currentPage', '/fin1');
+        console.log('Ruta guardada en localStorage: /fin1');
+    }
+
+    const handleClick2 = () => {
+        localStorage.setItem('currentPage', '/pitch');
+        console.log('Ruta guardada en localStorage: /pitch');
+    }
+
     return (
         <div className='confetti'>
             <Header2/>
@@ -12,10 +23,10 @@ function Numero12() {
             <h2>Han llegado a la meta y ahora tienen dos opciones:</h2>
             <div id='botones'>
             <Link to="/Fin1">
-                <button className='buttonNoConfirmar'>Premio asegurado</button>
+                <button className='buttonNoConfirmar' onClick={handleClick}>Premio asegurado</button>
             </Link>
             <Link to="/pitch">
-                <button className='buttonConfirmar'>Seguir jugando</button>
+                <button className='buttonConfirmar' onClick={handleClick2}>Seguir jugando</button>
             </Link>
             </div>
         </div>

@@ -5,18 +5,16 @@ import './bienvenida.css';
 
 function Bienvenida() {
 
-    useEffect(() => {
-        // Guardar la ruta actual en el localStorage
-        localStorage.setItem('currentPage', '/');
-        console.log(localStorage.getItem('currentPage')); 
-      }, []);
-    
+    const handleClick = () => {
+        localStorage.setItem('currentPage', '/reglas');
+        console.log('Ruta guardada en localStorage: /reglas');
+    }
     
     return (
         <div className='bienvenida-background overf' >
              <Header />
             <h2>Team building + museo + gamificación</h2>
-            <Link to="/reglas"><button className="buttonPpal" >Comenzar</button></Link>
+            <Link to="/reglas"  onClick={handleClick}><button className="buttonPpal" >Comenzar</button></Link>
             <div className='bienvenida-background2'></div>
         </div>
     );

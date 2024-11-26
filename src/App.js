@@ -14,7 +14,6 @@ import Numero9 from './pages/numero9/numero9';
 import Numero10 from './pages/numero10/numero10';
 import Numero11 from './pages/numero11/numero11';
 import Numero12 from './pages/numero12/numero12';
-import Numero13 from './pages/numero13/numero13';
 import Numero14 from './pages/numero14/numero14';
 import Pitch from './pages/pitch/pitch';
 import Fin1 from './pages/fin1/fin1';
@@ -34,12 +33,13 @@ function AppRoutes() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Leer la última página visitada desde localStorage
     const savedPage = localStorage.getItem('currentPage');
     if (savedPage) {
-      navigate(savedPage); // Redirigir a la última página guardada
+      // Si hay una página guardada en localStorage, navega a ella
+      navigate(savedPage);
     } else {
-      navigate('/'); // Si no hay página guardada, redirigir a la página inicial
+      // Si no hay página guardada, redirige a la página inicial
+      navigate('/');
     }
   }, [navigate]);
 
@@ -58,7 +58,6 @@ function AppRoutes() {
       <Route path="/numero10" element={<Numero10 />} />
       <Route path="/numero11" element={<Numero11 />} />
       <Route path="/numero12" element={<Numero12 />} />
-      <Route path="/numero13" element={<Numero13 />} />
       <Route path="/numero14" element={<Numero14 />} />
       <Route path="/pitch" element={<Pitch />} />
       <Route path="/fin1" element={<Fin1 />} />

@@ -6,12 +6,10 @@ import './reglas.css'
 
 function Reglas() {
 
-    useEffect(() => {
-        // Guardar la ruta actual en el localStorage
-        localStorage.setItem('currentPage', '/reglas');
-        console.log(localStorage.getItem('currentPage')); 
-      }, []);
-    
+    const handleClick = () => {
+        localStorage.setItem('currentPage', '/numero1');
+        console.log('Ruta guardada en localStorage: /numero1');
+    }
     
     return (
 
@@ -24,7 +22,7 @@ function Reglas() {
                 <li>Tienen que observar bien</li>
                 <li>¡Diviertanse!</li>
             </ul>
-            <Link to="/numero1"><button className="buttonPpal">Siguiente</button></Link>
+            <Link to="/numero1" onClick={handleClick}><button className="buttonPpal">Siguiente</button></Link>
             <Decor/>
         </div>
     );

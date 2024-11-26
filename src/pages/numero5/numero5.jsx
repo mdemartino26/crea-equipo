@@ -13,6 +13,11 @@ function Numero5() {
     setMostrarDivUno(false); // Oculta "uno" y muestra "dos"
   };
 
+  const handleClick = () => {
+    localStorage.setItem('currentPage', '/numero6');
+    console.log('Ruta guardada en localStorage: /numero6');
+}
+
   return (
     <div className="overf">
       <Header2 />
@@ -41,7 +46,7 @@ function Numero5() {
               con un párrafo, que envía al grupo de WhatsApp.
             </p>
             <Link to="/numero6">
-              <button className="buttonPpal">Continuar</button>
+              <button className="buttonPpal" onClick={handleClick}>Continuar</button>
             </Link>
           </div>
         )}

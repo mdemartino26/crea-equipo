@@ -34,6 +34,11 @@ function Numero6() {
     }
   };
 
+  const handleClick = () => {
+    localStorage.setItem('currentPage', '/numero7');
+    console.log('Ruta guardada en localStorage: /numero7');
+}
+
   return (
     <div className="overf">
       <Header2 />
@@ -61,7 +66,7 @@ function Numero6() {
             <img
               src={rompe3}
               alt="rompecabezas"
-              onClick={() => handleSeleccion("3")}
+              onClick={() => {handleClick(); handleSeleccion("3")}}
               className="clickable-image"
             />
           </div>

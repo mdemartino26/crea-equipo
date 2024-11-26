@@ -39,6 +39,11 @@ function Numero9() {
     }
   };
 
+  const handleClick = () => {
+    localStorage.setItem('currentPage', '/numero10');
+    console.log('Ruta guardada en localStorage: /numero10');
+}
+
   return (
     <div className="overf">
       <Header2 />
@@ -74,7 +79,7 @@ function Numero9() {
 
         {respuestaCorrecta && (
           <Link to="/numero10">
-            <button className="buttonPpal">Continuar</button>
+            <button className="buttonPpal" onClick={handleClick}>Continuar</button>
           </Link>
         )}
       </div>

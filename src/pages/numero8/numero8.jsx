@@ -4,8 +4,6 @@ import Header2 from '../../components/header2/header2';
 import Decor from "../../components/decor/decor";
 
 function Numero8() {
-    const [respuesta, setRespuesta] = useState('');
-    const [error, setError] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
 
     const handlePopupSubmit = (respuestaPopup) => {
@@ -17,6 +15,11 @@ function Numero8() {
             window.location.reload();
         }
     };
+
+    const handleClick = () => {
+        localStorage.setItem('currentPage', '/numero9');
+        console.log('Ruta guardada en localStorage: /numero9');
+    }
 
     return (
         <div>
@@ -35,7 +38,7 @@ function Numero8() {
                     <div className="popup">
                         <p>¿Ya armaron el pitch de venta? <br /> <br />   ¡Lo necesitarán luego!</p>
                         <div id='botones'>
-                            <Link to="/numero9"><button className='buttonConfirmar'>Si</button></Link>
+                            <Link to="/numero9"><button className='buttonConfirmar' onClick={handleClick}>Si</button></Link>
                             <button onClick={() => handlePopupSubmit('no')} className='buttonNoConfirmar'>No</button>
                         </div>
                     </div>

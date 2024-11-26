@@ -4,13 +4,21 @@ import Decor2 from '../../components/decor2/decor2';
 import './fin1.css';
 import Premio from '../../assets/img/award.svg';
 import PremioSound from '../../assets/sounds/prize.mp3'; 
+import { useNavigate } from 'react-router-dom';
 
 function Fin1() {
     const prizeSoundRef = useRef(null);
+    const navigate = useNavigate(); // Hook para navegación programática
 
     useEffect(() => {
         prizeSoundRef.current.play();
     }, []);
+
+     // Función para borrar el localStorage y redirigir al inicio
+     const handleRestart = () => {
+        localStorage.clear();  // Borra todo el localStorage
+        navigate('/');         // Redirige a la página de inicio
+    };
 
     return (
         <>
@@ -24,6 +32,10 @@ function Fin1() {
                     <img src={Premio} alt="Felicitaciones" />
                     <p>Gracias por participar</p>
                 </div>
+
+                <button className="buttonPpal" onClick={handleRestart}>
+                    Volver al inicio
+                </button>
 
                 <Decor2 />
                 <audio ref={prizeSoundRef} src={PremioSound}></audio>

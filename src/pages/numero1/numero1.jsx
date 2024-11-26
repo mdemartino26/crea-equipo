@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
 import './numero1.css';
 import Decor from '../../components/decor/decor';
@@ -14,6 +14,11 @@ function Numero1() {
     const correctSoundRef = useRef(null);
     const wrongSoundRef = useRef(null);
     const navigate = useNavigate(); // Hook para navegar programáticamente
+
+    const handleClick = () => {
+        localStorage.setItem('currentPage', '/numero2');
+        console.log('Ruta guardada en localStorage: /numero2');
+    }
     
 
     const handleChange = (event) => {
@@ -65,7 +70,7 @@ function Numero1() {
                             {/* Botón para avanzar usando handleNavigate */}
                             <button
                                 className="buttonPpal"
-                                onClick={() => handleNavigate('/numero2')}
+                                onClick={() => {  handleClick(); handleNavigate('/numero2')}} 
                             >
                                 Continuar
                             </button>

@@ -47,6 +47,11 @@ function Numero3() {
         }, 3000); // 3000 milliseconds = 3 seconds
     };
 
+    const handleClick = () => {
+        localStorage.setItem('currentPage', '/numero5');
+        console.log('Ruta guardada en localStorage: /numero5');
+    }
+
     return (
         <div className='overf'>
             <Header2 />
@@ -68,7 +73,7 @@ function Numero3() {
                 {respuestaCorrecta && <p style={{ color: 'green' }}>¡Correcto!</p>}
                 {respuestaCorrecta && (
                     <Link to="/numero5">
-                        <button className="buttonPpal" >Continuar</button>
+                        <button className="buttonPpal" onClick={handleClick}>Continuar</button>
                     </Link>
                 )}
             </form>

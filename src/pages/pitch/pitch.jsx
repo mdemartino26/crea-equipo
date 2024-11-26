@@ -28,13 +28,12 @@ function Pitch() {
     return () => clearInterval(timerInterval);
   }, [stage]);
 
-  const handleExposicion = () => {
-    setStage("ganaron");
-  };
-
-  const handleGanaron = () => {
-    window.location.href = "/numero14";
-  };
+  
+ 
+  const handleClick = () => {
+    localStorage.setItem('currentPage', '/numero14');
+    console.log('Ruta guardada en localStorage: /numero14');
+}
 
   return (
     <div className="overf">
@@ -71,13 +70,13 @@ function Pitch() {
             <br />
             <div id="botones">
               <button
-                onClick={() => setStage("timer")}
+                onClick={() => {setStage("timer"); handleClick()}}
                 className="buttonNoConfirmar"
               >
                 No
               </button>
               <Link to="/numero14">
-                <button className="buttonConfirmar">Sí</button>
+                <button className="buttonConfirmar" onClick={handleClick}>Sí</button>
               </Link>
           
             </div>

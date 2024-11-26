@@ -1,23 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import Header2 from "../../components/header2/header2";
 import "./numero10.css";
-import FotoCuadro from "../../assets/img/foto.jpg";
 
 function Numero10() {
-  const [respuesta, setRespuesta] = useState("");
-  const [error, setError] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
 
-  const handlePopupSubmit = (respuestaPopup) => {
-    if (respuestaPopup === "si") {
-      // Continuar a la página Numero11
-      console.log("Continuar a Numero11");
-    } else {
-      // Recargar la página para permanecer en la página Numero10
-      window.location.reload();
-    }
-  };
+
+  const handleClick = () => {
+    localStorage.setItem('currentPage', '/numero11');
+    console.log('Ruta guardada en localStorage: /numero11');
+}
+
 
   return (
     <div>
@@ -35,7 +28,7 @@ function Numero10() {
             </p>
 
             <Link to="/numero11">
-            <button className="buttonPpal">¡Ya falta poco!</button>
+            <button className="buttonPpal" onClick={handleClick}>¡Ya falta poco!</button>
           </Link>
           </div>
         

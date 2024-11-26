@@ -34,6 +34,11 @@ function Numero2() {
         }
     };
 
+    const handleClick = () => {
+        localStorage.setItem('currentPage', '/numero3');
+        console.log('Ruta guardada en localStorage: /numero3');
+    }
+
     return (
         <div className='overf'>
             <Header2 />
@@ -54,7 +59,7 @@ function Numero2() {
                 <>
                     
                     <Link to="/numero3">
-                        <button className="buttonPpal" >Continuar</button>
+                        <button className="buttonPpal" onClick={handleClick} >Continuar</button>
                     </Link>
                     <p style={{ color: 'green' }}>¡Correcto!</p>
                 </>

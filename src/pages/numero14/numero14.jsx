@@ -39,6 +39,12 @@ function Numero14() {
     }
   };
 
+  const handleClick = () => {
+    localStorage.setItem('currentPage', '/finDeJuego');
+    console.log('Ruta guardada en localStorage: /finDeJuego');
+}
+
+
   return (
     <div>
       <Header2 />
@@ -55,7 +61,7 @@ function Numero14() {
         />
         <br />
         {showMessage && <p style={{ color: "red" }}>Respuesta incorrecta</p>}
-        <button className="buttonPpal" onClick={checkAnswer}>
+        <button className="buttonPpal" onClick={() => {checkAnswer(); handleClick()}}>
           Continuar
         </button>
       </div>
