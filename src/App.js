@@ -33,7 +33,15 @@ function App() {
 function AppRoutes() {
   const navigate = useNavigate();
 
- 
+  useEffect(() => {
+    // Leer la última página visitada desde localStorage
+    const savedPage = localStorage.getItem('currentPage');
+    if (savedPage) {
+      navigate(savedPage); // Redirigir a la última página guardada
+    } else {
+      navigate('/'); // Si no hay página guardada, redirigir a la página inicial
+    }
+  }, [navigate]);
 
   return (
     <Routes>

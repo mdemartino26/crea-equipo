@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
 import Decor from '../../components/decor/decor';
@@ -6,9 +6,12 @@ import './reglas.css'
 
 function Reglas() {
 
+    useEffect(() => {
+        // Guardar la ruta actual en el localStorage
+        localStorage.setItem('currentPage', '/reglas');
+      }, []);
     
     
-
     return (
 
         <div className='overf'>

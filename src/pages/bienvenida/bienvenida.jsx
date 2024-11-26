@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../../components/header/header';
 import { Link } from 'react-router-dom';
 import './bienvenida.css';
 
 function Bienvenida() {
+
+    useEffect(() => {
+        // Guardar la ruta actual en el localStorage
+        localStorage.setItem('currentPage', '/');
+      }, []);
     
     
     return (
