@@ -63,12 +63,12 @@ function Numero3() {
                     placeholder="Ingrese su respuesta"
                 />
                 <br />
-                {!respuestaCorrecta && <button type="submit" class="buttonPpal" >Siguiente</button>}
+                {!respuestaCorrecta && <button type="submit" className="buttonPpal" >Siguiente</button>}
                 {error && <p style={{ color: 'red' }}>Respuesta incorrecta. Intente de nuevo.</p>}
                 {respuestaCorrecta && <p style={{ color: 'green' }}>¡Correcto!</p>}
                 {respuestaCorrecta && (
                     <Link to="/numero5">
-                        <button class="buttonPpal" >Continuar</button>
+                        <button className="buttonPpal" >Continuar</button>
                     </Link>
                 )}
             </form>

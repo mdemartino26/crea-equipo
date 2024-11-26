@@ -18,7 +18,7 @@ function Fin1() {
                 <Header2 />
                 <div className="main">
                     <h2>¡Felicitaciones! han ganado el juego </h2>
-                    <p> ¡Podes buscar tu premio! </p>
+                    <p> ¡Pueden buscar su premio! </p>
                     <br />
                     <br />
                     <img src={Premio} alt="Felicitaciones" />

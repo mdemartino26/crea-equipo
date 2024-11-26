@@ -46,7 +46,7 @@ function Numero9() {
         <p>
           {" "}
           Descolla en simpatía y alegría <br /> Y si bien no cura la agonía,<br /> Importante
-          fue mientras vivía.<br /> Tan importante es su obra que hasta el museo no
+          fue mientras vivía.<br /> Tan destacada es su obra que hasta el museo no
           fue avaro y <br />la homenajeó como lo merecía <br />
         </p>
         <form onSubmit={handleSubmit}>

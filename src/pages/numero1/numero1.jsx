@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header2 from '../../components/header2/header2';
 import './numero1.css';
 import Decor from '../../components/decor/decor';
@@ -13,6 +13,8 @@ function Numero1() {
     const [mostrarSiguiente, setMostrarSiguiente] = useState(true);
     const correctSoundRef = useRef(null);
     const wrongSoundRef = useRef(null);
+    const navigate = useNavigate(); // Hook para navegar programáticamente
+    
 
     const handleChange = (event) => {
         setRespuesta(event.target.value);
@@ -23,16 +25,22 @@ function Numero1() {
     const handleSubmit = (event) => {
         event.preventDefault();
         if (parseInt(respuesta) === 29) {
-            // Correct answer, allow to advance
+            // Respuesta correcta
             console.log('Respuesta correcta');
             setRespuestaCorrecta(true);
             setMostrarSiguiente(false);
-            correctSoundRef.current.play(); // Play correct sound
+            correctSoundRef.current.play(); // Reproducir sonido correcto
         } else {
-            // Incorrect answer, show error
+            // Respuesta incorrecta
             setError(true);
-            wrongSoundRef.current.play(); // Play wrong sound
+            wrongSoundRef.current.play(); // Reproducir sonido incorrecto
         }
+    };
+
+    const handleNavigate = (path) => {
+        // Guardar la página actual en localStorage
+        localStorage.setItem('currentPage', path);
+        navigate(path); // Navegar a la nueva página
     };
 
     return (
@@ -54,9 +62,13 @@ function Numero1() {
                     {respuestaCorrecta && (
                         <>
                             <p style={{ color: 'green' }}>¡Correcto!</p>
-                            <Link to="/numero2">
-                                <button className="buttonPpal">Continuar</button>
-                            </Link>
+                            {/* Botón para avanzar usando handleNavigate */}
+                            <button
+                                className="buttonPpal"
+                                onClick={() => handleNavigate('/numero2')}
+                            >
+                                Continuar
+                            </button>
                         </>
                     )}
                 </form>

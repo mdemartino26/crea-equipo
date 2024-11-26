@@ -5,6 +5,8 @@ import Decor from '../../components/decor/decor';
 import './reglas.css'
 
 function Reglas() {
+
+    
     
 
     return (
@@ -18,7 +20,7 @@ function Reglas() {
                 <li>Tienen que observar bien</li>
                 <li>¡Diviertanse!</li>
             </ul>
-            <Link to="/numero1"><button class="buttonPpal">Siguiente</button></Link>
+            <Link to="/numero1"><button className="buttonPpal">Siguiente</button></Link>
             <Decor/>
         </div>
     );

@@ -38,7 +38,7 @@ function Numero2() {
         <div className='overf'>
             <Header2 />
             <div className="main">
-            <p>¿Qué obra icónica vienen <strong>TODOS</strong> los turistas brasileros a ver al <strong>MALBA</strong>? <br /><br />Está cerca del inicio de la obra anterior.</p>
+            <p>¿Qué obra icónica vienen <strong>TODOS</strong> los turistas brasileros a ver <strong>en el museo</strong>? <br /><br />Está cerca de la obra anterior.</p>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -47,14 +47,14 @@ function Numero2() {
                     placeholder="Ingrese su respuesta"
                 />
                 <br />
-                {mostrarSiguiente && <button type="submit" class="buttonPpal" >Siguiente</button>}
+                {mostrarSiguiente && <button type="submit" className="buttonPpal" >Siguiente</button>}
             
             {error && <p style={{ color: 'red' }}>Respuesta incorrecta. Intente de nuevo.</p>}
             {respuestaCorrecta && (
                 <>
                     
                     <Link to="/numero3">
-                        <button class="buttonPpal" >Continuar</button>
+                        <button className="buttonPpal" >Continuar</button>
                     </Link>
                     <p style={{ color: 'green' }}>¡Correcto!</p>
                 </>

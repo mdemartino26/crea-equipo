@@ -3,7 +3,7 @@ import './decor.css'; // Importa tu archivo CSS para los estilos del header
 
 function Decor() {
   return (
-    <div class='deco'>
+    <div className='deco'>
       
       <div className='decor-background'></div>
     </div>
