@@ -48,7 +48,7 @@ function Numero6() {
             Dejando atrás el candombe, un nuevo desafío encontrarán. No pierdan
             la cabeza pues la necesitarán!
           </p>
-          <p>¿Qué imagen <strong>no</strong> está en la obra del Museo?</p>
+          <p>¿Qué imagen <strong>no</strong> está en la obra de Jorge de la Vega?</p>
 
           <div id="imagenes">
             <img

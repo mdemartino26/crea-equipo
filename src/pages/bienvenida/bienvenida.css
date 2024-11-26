@@ -33,6 +33,7 @@ body {
 
   p{
     font-size: 0.75em;
+    line-height: 1.75em;
   }
 
  
@@ -81,8 +82,4 @@ body {
     background-size: contain;
     z-index: -1;
     bottom: 0px;
-}
-
-p{
-  line-height: 1.5em;
 }

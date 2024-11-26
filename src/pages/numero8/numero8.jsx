@@ -31,7 +31,7 @@ function Numero8() {
                         <p>Armar pitch de venta</p>
                        
                         <br />
-                        <button onClick={() => setShowPopup(true)} className='buttonPpal'>Responder</button>
+                        <button onClick={() => setShowPopup(true)} className='buttonPpal'>Continuar</button>
                     </div>
                 )}
                 {showPopup && (

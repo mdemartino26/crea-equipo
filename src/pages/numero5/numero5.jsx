@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import circo from "../../assets/img/circo-lindo.jpg";
-import cancion from "../../assets/img/cancion-pueblo.jpg";
+import fijo from "../../assets/img/30fijo.png";
+import cancion from "../../assets/img/cancionpueblo.jpg";
 import Header2 from "../../components/header2/header2";
 import "./numero5.css";
 import Decor from "../../components/decor/decor";
@@ -27,7 +27,7 @@ function Numero5() {
             <p>Encuentren las obras a las que pertenecen estas imágenes.</p>
 
 <div id="imag">
-            <img src={circo} alt="Circo mas lindo del mundo" />
+            <img src={fijo} alt="Circo mas lindo del mundo" />
             <img src={cancion} alt="Cancion del pueblo" />
             </div>
             <p>¿Ya las encontraron? Continuemos</p>
