@@ -9,6 +9,7 @@ function Reglas() {
     useEffect(() => {
         // Guardar la ruta actual en el localStorage
         localStorage.setItem('currentPage', '/reglas');
+        console.log(localStorage.getItem('currentPage')); 
       }, []);
     
     

@@ -8,6 +8,7 @@ function Bienvenida() {
     useEffect(() => {
         // Guardar la ruta actual en el localStorage
         localStorage.setItem('currentPage', '/');
+        console.log(localStorage.getItem('currentPage')); 
       }, []);
     
     
