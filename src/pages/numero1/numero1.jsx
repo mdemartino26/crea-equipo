@@ -51,6 +51,7 @@ function Numero1() {
     return (
         <div className='overf'>
             <Header2 />
+            <section className='contenido'>
             <div className='main'>
                 <p>Ellas son blancas. Intentan con todas sus fuerzas unirse, pero no lo logran. (número)</p>
                 <form onSubmit={handleSubmit}>
@@ -78,7 +79,9 @@ function Numero1() {
                     )}
                 </form>
             </div>
+            </section>
             <Decor />
+            
             <audio ref={correctSoundRef} src={CorrectSound}></audio>
             <audio ref={wrongSoundRef} src={WrongSound}></audio>
         </div>

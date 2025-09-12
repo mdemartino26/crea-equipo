@@ -13,8 +13,9 @@ function Reglas() {
     
     return (
 
-        <div className='overf'>
+        <div className='overf reglas'>
             <Header2 />
+            <section className='contenido'>
             <h1>Reglas</h1>
             <ul>
                 <li>Lean bien las consignas</li>
@@ -23,6 +24,7 @@ function Reglas() {
                 <li>¡Diviertanse!</li>
             </ul>
             <Link to="/numero1" onClick={handleClick}><button className="buttonPpal">Siguiente</button></Link>
+            </section>
             <Decor/>
         </div>
     );

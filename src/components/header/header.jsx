@@ -1,11 +1,12 @@
 import React from 'react';
 import './header.css'; // Importa tu archivo CSS para los estilos del header
+import logo from "../../assets/img/logo.png";
 
 function Header() {
   return (
     <header>
       
-      <h1>Crea equip<span className="red-letter">o</span></h1>
+      <img src={logo} alt="" />
     </header>
   );
 }

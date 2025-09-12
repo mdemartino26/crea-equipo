@@ -2,10 +2,6 @@ img{
     width: 50%;
 }
 
-.overf{
-    height: 100vh;
-    overflow: hidden;
-}
 
 #imag{
     display: flex;

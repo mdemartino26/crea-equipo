@@ -11,11 +11,11 @@ function Bienvenida() {
     }
     
     return (
-        <div className='bienvenida-background overf' >
+        <div className='bienvenida-background overf bienvenidaCenter' >
              <Header />
             <h2>Team building + museo + gamificación</h2>
             <Link to="/reglas"  onClick={handleClick}><button className="buttonPpal" >Comenzar</button></Link>
-            <div className='bienvenida-background2'></div>
+        
         </div>
     );
 }

@@ -8,9 +8,9 @@ body {
 }
 
 .bienvenida-background {
-    background-image: url('../../assets/img/diseño1.png'); /* Ruta a tu imagen de fondo */
+    background-image: url('../../assets/img/diseño1.png'); 
     background-repeat: no-repeat;
-    height: 100vh; /* Altura igual al 100% del viewport height */
+    height: 100vh;
     background-position-x: 62%;
     background-position-y: -7rem;
     background-size: contain;
@@ -23,6 +23,13 @@ body {
     background-position-x: 62%;
     background-position-y: 0rem;
     background-size: contain;
+  }
+
+  .bienvenidaCenter{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
 
@@ -39,12 +46,12 @@ body {
  
 .buttonPpal {
     margin-top: 10%;
-  background: #FF4742;
+  color: #FF4742;
   border: 1px solid #FF4742;
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
   box-sizing: border-box;
-  color: #FFFFFF;
+  background-color: #f3f3f3;
   cursor: pointer;
   display: inline-block;
   font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
