@@ -1,10 +1,14 @@
 .App {
   text-align: center;
   margin: 0 auto;
-  background-color: white;
+  background-color: white !important;
   line-height: 1.5em;
 }
 
+html, body, #root {
+  background-color: #ffffff !important;
+  color: #000000;
+}
 
 main{  width: 80%;}
 
