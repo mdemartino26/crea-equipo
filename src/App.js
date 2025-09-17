@@ -18,8 +18,20 @@ import Numero14 from './pages/numero14/numero14';
 import Pitch from './pages/pitch/pitch';
 import Fin1 from './pages/fin1/fin1';
 import FinDeJuego from './pages/finDeJuego/finDeJuego';
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./firebase";
 
 function App() {
+   useEffect(() => {
+    const fetchData = async () => {
+      const snapshot = await getDocs(collection(db, "consignas"));
+      snapshot.forEach(doc => {
+        console.log(doc.id, "=>", doc.data());
+      });
+    };
+    fetchData();
+  }, []);
+  
   return (
     <div className="App">
       <Router>
