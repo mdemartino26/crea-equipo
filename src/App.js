@@ -1,37 +1,37 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import './App.css';
-import Bienvenida from './pages/bienvenida/bienvenida'; 
-import Reglas from './pages/reglas/reglas'; 
-import Numero1 from './pages/numero1/numero1';
-import Numero2 from './pages/numero2/numero2';
-import Numero3 from './pages/numero3/numero3';
-import Numero5 from './pages/numero5/numero5';
-import Numero6 from './pages/numero6/numero6';
-import Numero7 from './pages/numero7/numero7';
-import Numero8 from './pages/numero8/numero8';
-import Numero9 from './pages/numero9/numero9';
-import Numero10 from './pages/numero10/numero10';
-import Numero11 from './pages/numero11/numero11';
-import Numero12 from './pages/numero12/numero12';
-import Numero14 from './pages/numero14/numero14';
-import Pitch from './pages/pitch/pitch';
-import Fin1 from './pages/fin1/fin1';
-import FinDeJuego from './pages/finDeJuego/finDeJuego';
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+import "./App.css";
+
+import Bienvenida from "./pages/bienvenida/bienvenida";
+import Reglas from "./pages/reglas/reglas";
+import Numero1 from "./pages/numero1/numero1";
+import Numero2 from "./pages/numero2/numero2";
+import Numero3 from "./pages/numero3/numero3";
+import Numero5 from "./pages/numero5/numero5";
+import Numero6 from "./pages/numero6/numero6";
+import Numero7 from "./pages/numero7/numero7";
+import Numero8 from "./pages/numero8/numero8";
+import Numero9 from "./pages/numero9/numero9";
+import Numero10 from "./pages/numero10/numero10";
+import Numero11 from "./pages/numero11/numero11";
+import Numero12 from "./pages/numero12/numero12";
+import Numero14 from "./pages/numero14/numero14";
+import Pitch from "./pages/pitch/pitch";
+import Fin1 from "./pages/fin1/fin1";
+import FinDeJuego from "./pages/finDeJuego/finDeJuego";
+
+import Actividad from "./pages/Actividad/Actividad";
+import Admin from "./pages/Admin/Admin";
+
+const RESUME_KEY = "lastGamePage"; // <— nueva key solo para el juego
 
 function App() {
-   useEffect(() => {
-    const fetchData = async () => {
-      const snapshot = await getDocs(collection(db, "consignas"));
-      snapshot.forEach(doc => {
-        console.log(doc.id, "=>", doc.data());
-      });
-    };
-    fetchData();
-  }, []);
-  
   return (
     <div className="App">
       <Router>
@@ -43,17 +43,26 @@ function App() {
 
 function AppRoutes() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
+  // Al entrar a "/", si hay progreso del juego, lo retomamos
   useEffect(() => {
-    const savedPage = localStorage.getItem('currentPage');
-    if (savedPage) {
-      // Si hay una página guardada en localStorage, navega a ella
-      navigate(savedPage);
-    } else {
-      // Si no hay página guardada, redirige a la página inicial
-      navigate('/');
+    if (pathname === "/") {
+      const saved = localStorage.getItem(RESUME_KEY);
+      if (saved && saved !== "/") {
+        navigate(saved, { replace: true });
+      }
     }
-  }, [navigate]);
+  }, [pathname, navigate]);
+
+  // Guardamos progreso SOLO en rutas del juego (no admin)
+  useEffect(() => {
+    const isGameRoute =
+      pathname === "/reglas" || pathname.startsWith("/actividad/");
+    if (isGameRoute) {
+      localStorage.setItem(RESUME_KEY, pathname);
+    }
+  }, [pathname]);
 
   return (
     <Routes>
@@ -72,9 +81,11 @@ function AppRoutes() {
       <Route path="/numero12" element={<Numero12 />} />
       <Route path="/numero14" element={<Numero14 />} />
       <Route path="/pitch" element={<Pitch />} />
+      <Route path="/actividad/:id" element={<Actividad />} />
+      <Route path="/administrador" element={<Admin />} />
       <Route path="/fin1" element={<Fin1 />} />
       <Route path="/findejuego" element={<FinDeJuego />} />
-      <Route path="*" element={<Bienvenida />} /> {/* Redirección a una página por defecto */}
+      <Route path="*" element={<Bienvenida />} />
     </Routes>
   );
 }

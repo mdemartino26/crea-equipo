@@ -1,0 +1,27 @@
+.collapsible {
+  max-height: 0; /* cerrado */
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  padding: 0;
+}
+
+.collapsible.is-open {
+  max-height: 1000px; /* abierto (ojo: con unidad px) */
+  overflow: hidden;
+  transition: max-height 0.35s;
+  border: 1px solid rgb(238, 238, 238);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.formConsigna{
+    display: grid;
+    gap: 12;
+    max-width: 560;
+}
+
+.opciones{
+    display: flex;
+     gap: 12;
+     flex-wrap: wrap;
+}

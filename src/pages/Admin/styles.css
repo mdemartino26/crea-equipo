@@ -1,0 +1,169 @@
+.administrador{
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 10%;
+    margin-bottom: 10%;
+}
+
+/* ===== LISTA / TARJETA – FLEX VERSION ===== */
+
+.consignas{
+  box-sizing: border-box;
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+
+  display: flex;               /* FLEX en vez de grid */
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;             /* permite romper a 2 líneas en mobile */
+}
+
+/* handle (drag o flechas touch) a la izquierda */
+.dragNdrop,
+.touchReorder{
+  flex: 0 0 36px;              /* ancho fijo, no se encoge */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dragNdrop span{
+  font-size: 22px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.touchReorder{ flex-direction: column; gap: 6px; }
+.btnIcon{
+  width: 34px; height: 34px;
+  border: 1px solid #cfcfcf !important;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #111;
+  cursor: pointer;
+}
+.btnIcon:disabled{ opacity:.45; cursor: default; }
+
+/* bloque principal (título, meta y controles) ocupa el espacio restante */
+.datos{
+  flex: 1 1 280px;             /* crece, se reduce, base 280px */
+  min-width: 0;                /* evita overflow raro */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.datos .titulo{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.datos .meta{
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* link Ver a la derecha; en mobile puede bajar a nueva línea */
+.linkVer{
+  margin-left: auto;           /* empuja hacia la derecha */
+  align-self: flex-start;      /* arriba */
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  text-decoration: underline;
+}
+.linkVer:hover{ color: var(--accent); }
+
+/* fila de controles (select + botones) */
+.controls{
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.controls > *{ flex: 0 0 auto; } /* no permitir que se achiquen */
+
+/* select de posición */
+.selectWrap{ position: relative; }
+.selectOutline{
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  font-size: 14px;
+  padding: 8px 34px 8px 12px;
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.selectWrap::after{
+  content: "▾";
+  position: absolute;
+  right: 10px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 16px;
+  color: #111;
+}
+
+/* botones outline (Editar / Mostrar) – tamaño estable */
+.btnOutline{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 104px;
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 2px solid var(--accent);
+  background: #fff;
+  color: #111 !important;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.btnOutline:hover{
+  background: var(--accent);
+  color: #fff !important;
+}
+
+/* ===== TOP BAR (opcional, por si lo usás) ===== */
+.barraAcciones{
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+.statRight{ margin-left: auto; }
+
+/* ===== Responsive ===== */
+@media (max-width: 520px){
+  .dragNdrop{ display: none; }             /* en táctil suele no usarse drag */
+  .linkVer{
+    width: 100%;                           /* baja a la segunda línea */
+    text-align: right;
+    margin-left: 0;
+    order: 3;                              /* al final del bloque */
+  }
+  .datos{ order: 2; }
+  .btnOutline{ font-size: 13px; min-width: 96px; padding: 6px 10px; }
+  .selectOutline{ font-size: 13px; }
+}
+
+/* ocultar el handle en dispositivos táctiles explícitos */
+@media (hover:none) and (pointer:coarse){
+  .dragNdrop{ display: none; }
+}
