@@ -15,8 +15,9 @@ import Header2 from "../../components/header2/header2";
 import Decor from "../../components/decor/decor";
 import { cldUrl } from "../../lib/cloudinary";
 import Ruleta from "../../components/ruleta/ruleta";
+import Progreso from "../../components/Progreso/Progreso";
 
-import './styles.css'
+import "./styles.css";
 
 import CorrectSound from "../../assets/sounds/correct.mp3";
 import WrongSound from "../../assets/sounds/wrong.mp3";
@@ -140,26 +141,40 @@ export default function Actividad() {
   const audioSrc =
     consigna.audioURL ||
     (tipo === "audio" && consigna.mediaURL ? consigna.mediaURL : null);
-  const imageOptimized = imageSrc ? cldUrl(imageSrc, "f_auto,q_auto,w_1000") : null;
+  const imageOptimized = imageSrc
+    ? cldUrl(imageSrc, "f_auto,q_auto,w_1000")
+    : null;
 
   return (
     <div className="overf general">
       <Header2 />
+      <div className="progreso">
+     <Progreso
+  current={Math.max(0, idx)}
+  total={Math.max(renderList.length, 1)}
+/>
+</div>
       <section className="seccionActividad">
-      
-        {consigna.enunciado && <h2 className="enunciado">{consigna.enunciado}</h2>}
+     
+     
+        {consigna.enunciado && (
+          <h2 className="enunciado">{consigna.enunciado}</h2>
+        )}
+
+   
+
 
         {/* Media: imagen y/o audio si existen */}
         {imageOptimized && (
           <img
-          className="imagenConsigna"
+            className="imagenConsigna"
             src={imageOptimized}
             alt={consigna.titulo || "consigna"}
             loading="lazy"
             decoding="async"
           />
         )}
-        {audioSrc && <audio controls src={audioSrc} className="audioPlayer"/>}
+        {audioSrc && <audio controls src={audioSrc} className="audioPlayer" />}
 
         {/* RULETA */}
         {tipo === "ruleta" ? (
@@ -189,18 +204,15 @@ export default function Actividad() {
               </div>
             ) : (
               // Si requiere respuesta: input + botón único
-              <div
-                className="inputDiv"
-              >
+              <div className="inputDiv">
                 <input
-                className="inputRta"
+                  className="inputRta"
                   value={respuesta}
                   onChange={(e) => {
                     setRespuesta(e.target.value);
                     setOk(null);
                   }}
                   placeholder="Tu respuesta"
-                  
                 />
                 <button className="btnSiguiente" onClick={handleNext}>
                   {nextId ? "Siguiente" : "Terminar"}
@@ -220,8 +232,6 @@ export default function Actividad() {
           </>
         )}
       </section>
-
-  
 
       {/* Sonidos */}
       <audio ref={correctRef} src={CorrectSound} />

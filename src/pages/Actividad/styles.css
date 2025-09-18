@@ -3,7 +3,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  height: 70vh;
+  height: 60vh;
   justify-content: center;
   align-items: center;
 }
@@ -70,4 +70,10 @@
   user-select: none;
   -webkit-user-select: none;
   vertical-align: middle;
+}
+
+
+.progreso{
+    width: 80%;
+    margin: 0 auto;
 }
