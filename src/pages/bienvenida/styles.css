@@ -47,12 +47,11 @@ body {
 .buttonPpal {
   width: 70%;
     margin-top: 10%;
-  color: #646464;
-  border: 1px solid #646464;
+  color: white;
   border-radius: 6px;
-  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 4px;
   box-sizing: border-box;
-  background-color: #f3f3f3;
+  background-color: black;
   cursor: pointer;
   display: inline-block;
   font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
@@ -75,7 +74,7 @@ body {
 .buttonPpal:active {
   background-color: initial;
   background-position: 0 0;
-  color: #FF4742;
+  color: black;
 }
 
 .buttonPpal:active {
@@ -95,5 +94,37 @@ body {
 
 .enlace{
   text-decoration: none;
-  color: #646464;
+  color: white;
+}
+
+.titila {
+  position: relative;
+  animation: titilarBtn 1.1s ease-in-out infinite;
+  will-change: transform, box-shadow, opacity;
+}
+
+/* Mantener el estilo en hover mientras anima */
+.buttonPpal.titila:hover,
+.buttonPpal.titila:active {
+  background-color: black;
+  color: white;
+}
+
+/* Keyframes del pulso */
+@keyframes titilarBtn {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: rgba(0,0,0,0.25) 0 6px 16px;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.85;
+    box-shadow: rgba(0,0,0,0.35) 0 10px 24px;
+  }
+}
+
+/* Respeto accesibilidad: sin animación si el usuario la reduce */
+@media (prefers-reduced-motion: reduce) {
+  .titila { animation: none; }
 }
