@@ -158,7 +158,7 @@ export default function Admin() {
     setDraft((prev) => prev.map((x) => (x.id === id ? { ...x, ...data } : x)));
   };
 
-  if (loading) return <main style={{ padding: 24 }}>Cargando…</main>;
+  if (loading) return <main className="loading">Cargando…</main>;
 
   const isTouch =
     typeof window !== "undefined" &&

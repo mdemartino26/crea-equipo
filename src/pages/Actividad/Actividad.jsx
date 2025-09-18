@@ -121,7 +121,7 @@ export default function Actividad() {
     return (
       <div className="overf">
         <Header2 />
-        <main style={{ padding: 24 }}>Cargando…</main>
+        <main className="loading">Cargando…</main>
       </div>
     );
   }
