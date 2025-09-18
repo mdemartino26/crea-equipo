@@ -55,34 +55,29 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
 
   return (
     <div style={backdrop}>
-      <div style={modal}>
+      <div className="modal">
         <h3>Editar consigna</h3>
-        <form onSubmit={save} style={{ display: "grid", gap: 10 }}>
-          <label>Título
+        <form onSubmit={save} className="formEditar">
+          <label className="inputEdit">Título
             <input value={form.titulo} onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))} />
           </label>
-          <label>Enunciado
+          <label className="inputEdit">Enunciado
             <textarea rows={4} value={form.enunciado}
               onChange={(e) => setForm((f) => ({ ...f, enunciado: e.target.value }))} />
           </label>
 
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <label>Tipo:&nbsp;
+            <label className="inputEdit">Tipo:&nbsp;
               <select value={form.tipo} onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}>
                 <option value="texto">Texto</option>
                 <option value="imagen">Imagen</option>
                 <option value="audio">Audio</option>
               </select>
             </label>
-            <label>Respuesta:&nbsp;
-              <input value={form.respuestaCorrecta}
-                onChange={(e) => setForm((f) => ({ ...f, respuestaCorrecta: e.target.value }))} />
-            </label>
-          </div>
 
-          {form.tipo !== "texto" && (
+            {form.tipo !== "texto" && (
             <>
-              <label>Media URL
+              <label className="inputEdit">Media URL
                 <input value={form.mediaURL} onChange={(e) => setForm((f) => ({ ...f, mediaURL: e.target.value }))} />
               </label>
               <div>
@@ -93,10 +88,17 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
               </div>
             </>
           )}
+            <label className="inputEdit">Respuesta:&nbsp;
+              <input value={form.respuestaCorrecta}
+                onChange={(e) => setForm((f) => ({ ...f, respuestaCorrecta: e.target.value }))} />
+            </label>
+          </div>
 
-          <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
-            <button type="button" onClick={onClose} disabled={saving}>Cancelar</button>
-            <button type="submit" disabled={saving} style={{ background: "#0c7", color: "#fff" }}>
+          
+
+          <div className="btnConfirmar">
+            <button type="button" onClick={onClose} disabled={saving} className="btnConfir">Cancelar</button>
+            <button type="submit" disabled={saving} className="btnConfir save">
               {saving ? "Guardando..." : "Guardar"}
             </button>
           </div>
@@ -107,4 +109,4 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
 }
 
 const backdrop = { position:"fixed", inset:0, background:"rgba(0,0,0,.35)", display:"grid", placeItems:"center", zIndex:1000 };
-const modal = { width:"min(720px,95vw)", background:"#fff", borderRadius:12, padding:16, boxShadow:"0 10px 30px rgba(0,0,0,.2)" };
+
