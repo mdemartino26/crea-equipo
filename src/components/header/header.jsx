@@ -6,7 +6,7 @@ function Header() {
   return (
     <header>
       
-      <img src={logo} alt="" />
+      <img src={logo} alt="" className='fotoLogo'/>
     </header>
   );
 }

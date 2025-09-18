@@ -34,16 +34,16 @@ navigate(path);
   return (
     <div className="bienvenida-background overf bienvenidaCenter">
       <Header />
-      <h2>Team building + museo + gamificación</h2>
+  
 
      
       <button className="buttonPpal" onClick={comenzar}>Comenzar</button>
 
-      <div style={{ marginTop: 12 }}>
-        <Link to="/reglas">
-          <button className="buttonPpal">Ver reglas</button>
-        </Link>
-      </div>
+      <button className="buttonPpal">
+        <Link to="/reglas" className="enlace">
+          Ver reglas
+        </Link></button>
+      
     </div>
   );
 }

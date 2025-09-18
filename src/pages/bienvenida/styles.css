@@ -12,14 +12,14 @@ body {
     background-repeat: no-repeat;
     height: 100vh;
     background-position-x: 62%;
-    background-position-y: -7rem;
+    background-position-y: -10rem;
     background-size: contain;
   }
 
   .bienvenida-background2 {
     background-image: url('../../assets/img/diseño1.png'); /* Ruta a tu imagen de fondo */
     background-repeat: no-repeat;
-    height: 100vh; /* Altura igual al 100% del viewport height */
+    height: 100vh; 
     background-position-x: 62%;
     background-position-y: 0rem;
     background-size: contain;
@@ -45,9 +45,10 @@ body {
 
  
 .buttonPpal {
+  width: 70%;
     margin-top: 10%;
-  color: #FF4742;
-  border: 1px solid #FF4742;
+  color: #646464;
+  border: 1px solid #646464;
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
   box-sizing: border-box;
@@ -89,4 +90,10 @@ body {
     background-size: contain;
     z-index: -1;
     bottom: 0px;
+}
+
+
+.enlace{
+  text-decoration: none;
+  color: #646464;
 }
