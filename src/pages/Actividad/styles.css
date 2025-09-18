@@ -1,0 +1,73 @@
+.seccionActividad {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.enunciado {
+  font-size: 1.3em;
+  font-weight: 500;
+  padding: 5% 0 5% 0;
+}
+
+.general {
+  height: 100vh;
+  background-image: url(../../assets/img/diseño2.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position-y: 138%;
+}
+
+.imagenConsigna {
+  width: 80%;
+  height: auto;
+  border-radius: 10;
+  margin-bottom: 5%;
+  border-radius: 6%;
+}
+
+.audioPlayer{
+    width: 80%;
+    margin-bottom: 5%;
+}
+
+.inputDiv{
+    width: 100%;
+}
+
+.inputRta {
+  border: 1px solid #646464;
+  padding: 4% 0;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.btnSiguiente {
+    width: 100%;
+  margin-top: 10%;
+  color: #646464;
+  border: 1px solid #646464;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  background-color: #f3f3f3;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito, roboto, proxima-nova, "proxima nova", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+}

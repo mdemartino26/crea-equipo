@@ -16,6 +16,8 @@ import Decor from "../../components/decor/decor";
 import { cldUrl } from "../../lib/cloudinary";
 import Ruleta from "../../components/ruleta/ruleta";
 
+import './styles.css'
+
 import CorrectSound from "../../assets/sounds/correct.mp3";
 import WrongSound from "../../assets/sounds/wrong.mp3";
 
@@ -141,23 +143,23 @@ export default function Actividad() {
   const imageOptimized = imageSrc ? cldUrl(imageSrc, "f_auto,q_auto,w_1000") : null;
 
   return (
-    <div className="overf">
+    <div className="overf general">
       <Header2 />
-      <section style={{ padding: 24, display: "grid", gap: 16 }}>
-        {consigna.titulo && <h2>{consigna.titulo}</h2>}
-        {consigna.enunciado && <p>{consigna.enunciado}</p>}
+      <section className="seccionActividad">
+      
+        {consigna.enunciado && <h2 className="enunciado">{consigna.enunciado}</h2>}
 
         {/* Media: imagen y/o audio si existen */}
         {imageOptimized && (
           <img
+          className="imagenConsigna"
             src={imageOptimized}
             alt={consigna.titulo || "consigna"}
             loading="lazy"
             decoding="async"
-            style={{ maxWidth: "100%", height: "auto", borderRadius: 10 }}
           />
         )}
-        {audioSrc && <audio controls src={audioSrc} />}
+        {audioSrc && <audio controls src={audioSrc} className="audioPlayer"/>}
 
         {/* RULETA */}
         {tipo === "ruleta" ? (
@@ -188,23 +190,19 @@ export default function Actividad() {
             ) : (
               // Si requiere respuesta: input + botón único
               <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  flexWrap: "wrap",
-                  flexDirection: "column",
-                }}
+                className="inputDiv"
               >
                 <input
+                className="inputRta"
                   value={respuesta}
                   onChange={(e) => {
                     setRespuesta(e.target.value);
                     setOk(null);
                   }}
                   placeholder="Tu respuesta"
-                  style={{ minWidth: 220, flex: "1 1 240px" }}
+                  
                 />
-                <button className="buttonPpal" onClick={handleNext}>
+                <button className="btnSiguiente" onClick={handleNext}>
                   {nextId ? "Siguiente" : "Terminar"}
                 </button>
               </div>
@@ -223,7 +221,7 @@ export default function Actividad() {
         )}
       </section>
 
-      <Decor />
+  
 
       {/* Sonidos */}
       <audio ref={correctRef} src={CorrectSound} />
