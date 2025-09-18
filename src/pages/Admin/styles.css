@@ -10,7 +10,7 @@
 .consignas{
   box-sizing: border-box;
   width: 100%;
-  padding: 14px 16px;
+  padding: 14px 0;
   margin-bottom: 12px;
   border: 1px solid #eee;
   border-radius: 12px;
@@ -83,31 +83,20 @@
   font-weight: 700;
   color: #111;
   text-decoration: underline;
+  text-align: center;
 }
 .linkVer:hover{ color: var(--accent); }
 
 /* fila de controles (select + botones) */
 .controls{
-  margin-top: 8px;
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
 }
 .controls > *{ flex: 0 0 auto; } /* no permitir que se achiquen */
 
 /* select de posición */
-.selectWrap{ position: relative; }
-.selectOutline{
-  appearance: none; -webkit-appearance: none; -moz-appearance: none;
-  font-size: 14px;
-  padding: 8px 34px 8px 12px;
-  border: 2px solid var(--accent);
-  border-radius: 6px;
-  background: #fff;
-  cursor: pointer;
-  white-space: nowrap;
-}
+.selectWrap{ position: relative; 
+width: 33%;}
+
 .selectWrap::after{
   content: "▾";
   position: absolute;
@@ -139,22 +128,46 @@
   color: #fff !important;
 }
 
+.btnAcc{
+        font-size: 13px;
+        width: 33%;
+}
+
 /* ===== TOP BAR (opcional, por si lo usás) ===== */
 .barraAcciones{
+  margin-top: 5%;
   border: 1px solid #eee;
   border-radius: 12px;
   padding: 12px;
   display: grid;
   gap: 8px;
+  border: 1px solid black;
 }
 .statRight{ margin-left: auto; }
+
+
+.accOpcion{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: left;
+  flex-wrap: wrap;
+}
+
+.btnCambios{
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 520px){
   .dragNdrop{ display: none; }             /* en táctil suele no usarse drag */
   .linkVer{
     width: 100%;                           /* baja a la segunda línea */
-    text-align: right;
+    text-align: center;
     margin-left: 0;
     order: 3;                              /* al final del bloque */
   }

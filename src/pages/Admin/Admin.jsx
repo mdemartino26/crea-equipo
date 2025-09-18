@@ -170,19 +170,12 @@ export default function Admin() {
       <h1 className="adminTitulo">Administrador</h1>
 
       <div className="barraAcciones">
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <div className="accOpcion">
           <button onClick={() => setOpenForm((v) => !v)} className="btnFormulario">
             {openForm ? "▲ Cerrar formulario" : "＋ Nueva consigna"}
           </button>
 
-          <label style={{ userSelect: "none" }}>
-            <input
-              type="checkbox"
-              checked={reorderMode}
-              onChange={() => setReorderMode((v) => !v)}
-            />{" "}
-            Modo ordenar (arrastrar)
-          </label>
+          
 
           <label style={{ userSelect: "none" }}>
             <input
@@ -198,7 +191,7 @@ export default function Admin() {
           </span>
         </div>
 
-        <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="btnCambios">
           <button
             type="button"
             onClick={descartarCambios}
@@ -293,13 +286,13 @@ export default function Admin() {
                   </select>
                 </div>
 
-                <button type="button" className="btnOutline" onClick={() => setEditing(it)}>
+                <button type="button" className="btnAcc" onClick={() => setEditing(it)}>
                   Editar
                 </button>
 
                 <button
                   type="button"
-                  className="btnOutline"
+                  className="btnAcc"
                   onClick={() => toggleVisibleDraft(it.id)}
                 >
                   {it.visible ? "Ocultar" : "Mostrar"}
