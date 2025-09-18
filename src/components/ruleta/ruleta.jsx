@@ -1,6 +1,13 @@
 // src/components/ruleta/ruleta.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
-import { addDoc, collection, serverTimestamp, increment, updateDoc, doc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  increment,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 
 export default function Ruleta({
@@ -23,7 +30,8 @@ export default function Ruleta({
 
   function pickTarget() {
     if (!opciones.length) return 0;
-    if (forceWin) return ((winIndex % opciones.length) + opciones.length) % opciones.length;
+    if (forceWin)
+      return ((winIndex % opciones.length) + opciones.length) % opciones.length;
     return Math.floor(Math.random() * opciones.length);
   }
 
@@ -82,18 +90,27 @@ export default function Ruleta({
     if (!wheel) return;
 
     const onEnd = async () => {
-      const won = opciones.length ? targetIdx === (((winIndex % opciones.length) + opciones.length) % opciones.length) : false;
+      const won = opciones.length
+        ? targetIdx ===
+          ((winIndex % opciones.length) + opciones.length) % opciones.length
+        : false;
 
       await logSpin(consignaId, { target: targetIdx, won });
 
       if (won) {
         setTimeout(() => {
-          try { onWin(); } catch {}
-          try { onFinish(); } catch {}
+          try {
+            onWin();
+          } catch {}
+          try {
+            onFinish();
+          } catch {}
           setSpinning(false);
         }, winDelayMs);
       } else {
-        try { onFinish(); } catch {}
+        try {
+          onFinish();
+        } catch {}
         setSpinning(false);
       }
 
@@ -112,20 +129,40 @@ export default function Ruleta({
     wheel.addEventListener("transitionend", onEnd);
     return () => wheel.removeEventListener("transitionend", onEnd);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [angle, targetIdx, consignaId, winIndex, winDelayMs, onWin, onFinish, opciones.length]);
+  }, [
+    angle,
+    targetIdx,
+    consignaId,
+    winIndex,
+    winDelayMs,
+    onWin,
+    onFinish,
+    opciones.length,
+  ]);
 
   const palette = useMemo(() => {
     if (!opciones.length) return [];
     const base = [
-      "#ffd166","#06d6a0","#a3cef1","#f4978e","#b8f2e6",
-      "#f2c6de","#caffbf","#ffd6a5","#fdffb6","#bdb2ff",
+      "#ffd166",
+      "#06d6a0",
+      "#a3cef1",
+      "#f4978e",
+      "#b8f2e6",
+      "#f2c6de",
+      "#caffbf",
+      "#ffd6a5",
+      "#fdffb6",
+      "#bdb2ff",
     ];
-    return Array.from({ length: opciones.length }, (_, i) => opciones[i]?.color || base[i % base.length]);
+    return Array.from(
+      { length: opciones.length },
+      (_, i) => opciones[i]?.color || base[i % base.length]
+    );
   }, [opciones]);
 
   const cx = size / 2;
   const cy = size / 2;
-  const r = (size / 2) - 6;
+  const r = size / 2 - 6;
 
   // genera paths de “torta” para cada segmento
   const slices = useMemo(() => {
@@ -146,9 +183,9 @@ export default function Ruleta({
         "Z",
       ].join(" ");
 
-      const labelAngle = (i * seg + seg / 2) - 90; // para ubicar texto
-      const tx = cx + (r * 0.6) * Math.cos((labelAngle) * Math.PI / 180);
-      const ty = cy + (r * 0.6) * Math.sin((labelAngle) * Math.PI / 180);
+      const labelAngle = i * seg + seg / 2 - 90; // para ubicar texto
+      const tx = cx + r * 0.6 * Math.cos((labelAngle * Math.PI) / 180);
+      const ty = cy + r * 0.6 * Math.sin((labelAngle * Math.PI) / 180);
 
       return {
         i,
@@ -171,13 +208,14 @@ export default function Ruleta({
           style={{
             position: "absolute",
             left: "50%",
-            top: -6,
+            top: -2,
             transform: "translateX(-50%)",
             width: 0,
             height: 0,
             borderLeft: "10px solid transparent",
             borderRight: "10px solid transparent",
-            borderBottom: "16px solid #111",
+            borderTop: "16px solid #111",
+            borderBottom: "0 solid transparent",
             zIndex: 2,
             filter: "drop-shadow(0 1px 1px rgba(0,0,0,.35))",
           }}
