@@ -13,7 +13,7 @@ export default function RuletaMuseoSub({
   opciones = [],
   onWin = () => {},
   onFinish = () => {},
-  size = 340,
+  size = 250,
   outerSegments = 8,
   innerSegments = 8,
   positiveTexts = ["sí","si","que suerte!","avanzá","positivo"],

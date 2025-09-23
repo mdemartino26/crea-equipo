@@ -214,7 +214,7 @@ export default function Actividad() {
 <RuletaMuseoSub
   consignaId={consigna.id}
   opciones={opcionesMuseo}
-  size={340}
+  size={300}
   outerSegments={8}
   innerSegments={8}
   ratios={{ inner: 0.26, diamond: 0.64 }}
