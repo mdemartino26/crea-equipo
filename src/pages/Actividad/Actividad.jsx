@@ -313,17 +313,17 @@ export default function Actividad() {
     if (r === sol) {
       setOk(true);
       try { if (correctRef.current) { correctRef.current.currentTime = 0; correctRef.current.play(); } } catch {}
-      showToast({ title: "¡Correcto!", msg: "Tu respuesta es correcta." });
+      showToast({ title: "¡Correcto!", msg: "Continuá así." });
       if (followTimerRef.current) clearTimeout(followTimerRef.current);
       followTimerRef.current = setTimeout(() => seguir(), 3000);
     } else {
       setOk(false);
       try { if (wrongRef.current) { wrongRef.current.currentTime = 0; wrongRef.current.play(); } } catch {}
-      showToast({ title: "Incorrecto", msg: "No es correcto. Probá de nuevo." });
+      showToast({ title: "Incorrecto", msg: "No es correcto. Probá nuevamente." });
     }
   };
 
-  // 👉 NO llamamos hooks debajo de este early return
+  
   if (!consigna) {
     return (
       <div className="overf">

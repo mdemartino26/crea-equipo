@@ -1,4 +1,3 @@
-// src/pages/Admin/components/EditConsignaModal.jsx
 import { useState, useMemo } from "react";
 import { db } from "../../../firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -11,56 +10,78 @@ function parseMulti(text = "") {
     .map((s) => s.trim())
     .filter(Boolean);
 }
-const toStr = (v) =>
-  v == null ? "" : typeof v === "string" ? v : String(v);
-
+const toStr = (v) => (v == null ? "" : typeof v === "string" ? v : String(v));
 // si viene array, usamos el primero; si viene número/otro, lo casteamos
-const normalizeSingle = (v) =>
-  Array.isArray(v) ? toStr(v[0] ?? "") : toStr(v);
+const normalizeSingle = (v) => (Array.isArray(v) ? toStr(v[0] ?? "") : toStr(v));
 
 export default function EditConsignaModal({ item, onClose, onSaved }) {
-  const initialTitulo = toStr(item.titulo || item.obra || "");
-  const initialRespuestaSingle = normalizeSingle(item.respuestaCorrecta);
-
+  // ---- base fields ----
   const [form, setForm] = useState({
-    titulo: initialTitulo,
+    titulo: toStr(item.titulo || item.obra || ""),
     enunciado: toStr(item.enunciado || ""),
-    tipo: toStr(item.tipo || "texto"),
-    respuestaCorrecta: initialRespuestaSingle,   // SIEMPRE string
-    mediaURL: toStr(item.mediaURL || ""),
+    tipo: toStr(item.tipo || "texto"), // NO limita medios
+    respuestaCorrecta: normalizeSingle(item.respuestaCorrecta),
   });
 
-  // textarea inicial con el array si existe
+  // ---- respuestas múltiples (textarea) ----
   const initialMulti = useMemo(() => {
     const arr = Array.isArray(item.respuestasCorrectas) ? item.respuestasCorrectas : [];
     return arr.map(toStr).join("\n");
   }, [item.respuestasCorrectas]);
-
   const [respuestasCorrectasText, setRespuestasCorrectasText] = useState(initialMulti);
 
+  // ---- medios independientes (con compat mediaURL legado) ----
+  const initialImageURL = toStr(
+    item.imageURL || ((item.tipo === "imagen" || !item.imageURL) && item.mediaURL) || ""
+  );
+  const initialAudioURL = toStr(
+    item.audioURL || ((item.tipo === "audio" || !item.audioURL) && item.mediaURL) || ""
+  );
+
+  const [imgEnabled, setImgEnabled] = useState(Boolean(initialImageURL));
+  const [imgURL, setImgURL] = useState(initialImageURL);
+
+  const [audEnabled, setAudEnabled] = useState(Boolean(initialAudioURL));
+  const [audURL, setAudURL] = useState(initialAudioURL);
+
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const [uploadingAud, setUploadingAud] = useState(false);
 
-  const accept =
-    form.tipo === "imagen" ? "image/*" : form.tipo === "audio" ? "audio/*" : "*/*";
-
-  const uploadAndSet = async (file) => {
-    setUploading(true);
+  // ---- upload helpers ----
+  const uploadImage = async (file) => {
+    setUploadingImg(true);
     try {
-      const up = await uploadToCloudinary(file, form.tipo);
-      // up puede ser string o objeto
+      const up = await uploadToCloudinary(file, "image");
       const url = (up && (up.secure_url || up.url)) || String(up || "");
-      setForm((f) => ({ ...f, mediaURL: url }));
+      setImgURL(url);
+      setImgEnabled(true);
     } catch (e) {
-      alert("No se pudo subir el archivo");
+      alert("No se pudo subir la imagen");
     } finally {
-      setUploading(false);
+      setUploadingImg(false);
     }
   };
 
+  const uploadAudio = async (file) => {
+    setUploadingAud(true);
+    try {
+      const up = await uploadToCloudinary(file, "audio");
+      const url = (up && (up.secure_url || up.url)) || String(up || "");
+      setAudURL(url);
+      setAudEnabled(true);
+    } catch (e) {
+      alert("No se pudo subir el audio");
+    } finally {
+      setUploadingAud(false);
+    }
+  };
+
+  // ---- save ----
   const save = async (e) => {
     e.preventDefault();
     if (saving) return;
+
     try {
       setSaving(true);
 
@@ -72,24 +93,27 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
       );
 
       const payload = {
-        // muchas pantallas usan "obra" como título; guardo ambos por compat
+        // títulos (compat obra/titulo)
         titulo: toStr(form.titulo),
         obra: toStr(form.titulo),
         enunciado: toStr(form.enunciado),
-        tipo: toStr(form.tipo),
-        respuestaCorrecta: respuestasCorrectas.length
-          ? toStr(respuestasCorrectas[0])
-          : singleStr, // compat
-        respuestasCorrectas, // nuevo array
-        mediaURL: form.tipo === "texto" ? null : (toStr(form.mediaURL) || null),
+        tipo: toStr(form.tipo), // ya no determina los medios
+        // respuestas
+        respuestaCorrecta: respuestasCorrectas.length ? toStr(respuestasCorrectas[0]) : singleStr,
+        respuestasCorrectas,
+        // medios (independientes)
+        imageURL: imgEnabled && toStr(imgURL).trim() ? toStr(imgURL).trim() : null,
+        audioURL: audEnabled && toStr(audURL).trim() ? toStr(audURL).trim() : null,
+        // limpiamos mediaURL legado para que no interfiera
+        mediaURL: null,
         updatedAt: serverTimestamp(),
       };
 
       await updateDoc(doc(db, "consignas", item.id), payload);
       onSaved?.(payload);
       onClose();
-    } catch (e) {
-      console.error(e);
+    } catch (e2) {
+      console.error(e2);
       alert("No se pudo guardar");
     } finally {
       setSaving(false);
@@ -107,6 +131,7 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
               onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
             />
           </label>
+
           <label className="inputEdit">Enunciado
             <textarea
               rows={4}
@@ -115,7 +140,7 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
             />
           </label>
 
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
             <label className="inputEdit">Tipo:&nbsp;
               <select
                 value={toStr(form.tipo)}
@@ -126,47 +151,95 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
                 <option value="audio">Audio</option>
               </select>
             </label>
+            <small style={{opacity:.7}}>
+              El tipo ya no limita los medios: podés tener texto + imagen y/o audio.
+            </small>
+          </div>
 
-            {form.tipo !== "texto" && (
-              <>
-                <label className="inputEdit">Media URL
-                  <input
-                    value={toStr(form.mediaURL)}
-                    onChange={(e) => setForm((f) => ({ ...f, mediaURL: e.target.value }))}
-                  />
-                </label>
+          {/* === IMAGEN === */}
+          <fieldset style={{ border: "1px dashed #ddd", borderRadius: 8, padding: 12, marginTop: 8 }}>
+            <legend>Imagen</legend>
+            <label>
+              <input
+                type="checkbox"
+                checked={imgEnabled}
+                onChange={(e) => setImgEnabled(e.target.checked)}
+              />{" "}
+              Habilitar imagen
+            </label>
+
+            {imgEnabled && (
+              <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
+                <input
+                  placeholder="https://.../imagen.jpg"
+                  value={toStr(imgURL)}
+                  onChange={(e) => setImgURL(e.target.value)}
+                />
                 <div>
                   <small>o subir archivo</small><br />
                   <input
                     type="file"
-                    accept={accept}
-                    onChange={(e) => e.target.files?.[0] && uploadAndSet(e.target.files[0])}
+                    accept="image/*"
+                    onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])}
                   />
-                  {uploading && <span> Subiendo…</span>}
+                  {uploadingImg && <span> Subiendo imagen…</span>}
                 </div>
-              </>
+              </div>
             )}
+          </fieldset>
 
-            <label className="inputEdit" style={{ flex: "1 1 100%" }}>
-              Respuestas correctas (una por línea o separadas por |)
-              <textarea
-                rows={3}
-                value={toStr(respuestasCorrectasText)}
-                onChange={(e) => setRespuestasCorrectasText(e.target.value)}
-                placeholder={"Ej:\nConstelaciones\nconstelaciones\n29\nveintinueve"}
-              />
-            </label>
-
-            <label className="inputEdit">Respuesta (compatibilidad)
+          {/* === AUDIO === */}
+          <fieldset style={{ border: "1px dashed #ddd", borderRadius: 8, padding: 12, marginTop: 8 }}>
+            <legend>Audio</legend>
+            <label>
               <input
-                value={toStr(form.respuestaCorrecta)}
-                onChange={(e) => setForm((f) => ({ ...f, respuestaCorrecta: e.target.value }))}
-                placeholder="Se usará como primera del array si arriba está vacío"
-              />
+                type="checkbox"
+                checked={audEnabled}
+                onChange={(e) => setAudEnabled(e.target.checked)}
+              />{" "}
+              Habilitar audio
             </label>
-          </div>
 
-          <div className="btnConfirmar">
+            {audEnabled && (
+              <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
+                <input
+                  placeholder="https://.../archivo.mp3"
+                  value={toStr(audURL)}
+                  onChange={(e) => setAudURL(e.target.value)}
+                />
+                <div>
+                  <small>o subir archivo</small><br />
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    onChange={(e) => e.target.files?.[0] && uploadAudio(e.target.files[0])}
+                  />
+                  {uploadingAud && <span> Subiendo audio…</span>}
+                </div>
+              </div>
+            )}
+          </fieldset>
+
+          {/* === RESPUESTAS === */}
+          <label className="inputEdit" style={{ marginTop: 8 }}>
+            Respuestas correctas (una por línea o separadas por |)
+            <textarea
+              rows={3}
+              value={toStr(respuestasCorrectasText)}
+              onChange={(e) => setRespuestasCorrectasText(e.target.value)}
+              placeholder={"Ej:\nConstelaciones\nconstelaciones\n29\nveintinueve"}
+            />
+          </label>
+
+          <label className="inputEdit">Respuesta (compatibilidad)
+            <input
+              value={toStr(form.respuestaCorrecta)}
+              onChange={(e) => setForm((f) => ({ ...f, respuestaCorrecta: e.target.value }))}
+              placeholder="Se usará como primera del array si arriba está vacío"
+            />
+          </label>
+
+          <div className="btnConfirmar" style={{ marginTop: 12 }}>
             <button type="button" onClick={onClose} disabled={saving} className="btnConfir">Cancelar</button>
             <button type="submit" disabled={saving} className="btnConfir save">
               {saving ? "Guardando..." : "Guardar"}
