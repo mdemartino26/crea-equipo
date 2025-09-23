@@ -14,7 +14,8 @@ import {
 import Header2 from "../../components/header2/header2";
 import Decor from "../../components/decor/decor";
 import { cldUrl } from "../../lib/cloudinary";
-import Ruleta from "../../components/ruleta/ruleta";
+import RuletaMuseo from "../../components/ruleta/ruleta_museo";
+import RuletaMuseoSub from "../../components/ruleta/ruleta_museo_sub";
 import Progreso from "../../components/Progreso/Progreso";
 
 import "./styles.css";
@@ -22,7 +23,14 @@ import "./styles.css";
 import CorrectSound from "../../assets/sounds/correct.mp3";
 import WrongSound from "../../assets/sounds/wrong.mp3";
 
-// normaliza acentos, mayúsculas, signos, etc.
+ const MUSEO_COLORS = {
+  outer:   ["#F04A1D","#FFD23F","#9EE06E","#26B36A","#1E88E5","#2CB1C9","#E83E8C","#D72638"],
+  diamond: ["#F06292","#90A4AE","#D84315","#F9D34E"],
+  inner:   ["#C62828","#2E7D32","#1976D2","#FBC02D","#8E24AA","#00ACC1","#EF6C00","#43A047"],
+};
+
+
+// --- util normalizador ---
 function norm(s = "") {
   return s
     .toString()
@@ -33,6 +41,40 @@ function norm(s = "") {
     .replace(/\s+/g, " ")
     .toLowerCase();
 }
+const normPos = (s = "") =>
+  String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+// --- función pura (NO hook) para armar opciones de la ruleta museo ---
+function buildOpcionesMuseo(consigna) {
+  const baseTexts = ["sí", "intentá de nuevo", "que suerte!"];
+  const raw =
+    Array.isArray(consigna?.opciones) && consigna.opciones.length
+      ? consigna.opciones
+      : baseTexts;
+
+  const arr = raw.slice(0, 3).map((x) =>
+    typeof x === "string"
+      ? { texto: x }
+      : { texto: x?.texto ?? String(x), color: x?.color, positive: x?.positive }
+  );
+  while (arr.length < 3) arr.push(arr[arr.length % Math.max(1, raw.length)]);
+
+  const POS = (Array.isArray(consigna?.positiveTexts) &&
+  consigna.positiveTexts.length
+    ? consigna.positiveTexts
+    : ["sí", "si", "que suerte!", "avanzá", "positivo"]
+  ).map(normPos);
+
+  const mapped = arr.map((o) => ({
+    texto: o.texto,
+    color: o.color,
+    positive:
+      typeof o.positive === "boolean" ? o.positive : POS.includes(normPos(o.texto)),
+  }));
+
+  if (!mapped.some((m) => m.positive)) mapped[0].positive = true;
+  return mapped;
+}
 
 export default function Actividad() {
   const { id } = useParams();
@@ -42,7 +84,7 @@ export default function Actividad() {
   const [lista, setLista] = useState([]);
 
   const [respuesta, setRespuesta] = useState("");
-  const [ok, setOk] = useState(null); // true | false | null
+  const [ok, setOk] = useState(null);
 
   const correctRef = useRef(null);
   const wrongRef = useRef(null);
@@ -86,14 +128,9 @@ export default function Actividad() {
     else navigate("/findejuego");
   };
 
-  // Botón único "Siguiente"
   const handleNext = () => {
     const sol = norm(consigna?.respuestaCorrecta || "");
-    if (!sol) {
-      // sin respuesta definida -> pasa directo
-      seguir();
-      return;
-    }
+    if (!sol) return seguir();
     const r = norm(respuesta);
 
     if (r === sol) {
@@ -104,7 +141,7 @@ export default function Actividad() {
           correctRef.current.play();
         }
       } catch {}
-      setTimeout(seguir, 500); // que se oiga el “correcto”
+      setTimeout(seguir, 500);
     } else {
       setOk(false);
       try {
@@ -113,10 +150,10 @@ export default function Actividad() {
           wrongRef.current.play();
         }
       } catch {}
-      // no navega: muestra error
     }
   };
 
+  // 👉 NO llamamos hooks debajo de este early return
   if (!consigna) {
     return (
       <div className="overf">
@@ -126,15 +163,13 @@ export default function Actividad() {
     );
   }
 
-  const tipo = consigna.tipo || "texto";
+  const tipo = consigna?.tipo || "texto";
 
-  // NUEVO: consignas “de confirmación” (no requieren respuesta)
   const skipAnswer =
     consigna?.requiereRespuesta === false ||
     ["confirmar", "whatsapp", "paso", "info"].includes(tipo) ||
     !consigna?.respuestaCorrecta;
 
-  // Soporta ambos medios (nuevo esquema imageURL/audioURL) con fallback al viejo mediaURL
   const imageSrc =
     consigna.imageURL ||
     (tipo === "imagen" && consigna.mediaURL ? consigna.mediaURL : null);
@@ -145,26 +180,24 @@ export default function Actividad() {
     ? cldUrl(imageSrc, "f_auto,q_auto,w_1000")
     : null;
 
+  // ✅ ahora es una FUNCIÓN (no hook), así que no viola reglas
+  const opcionesMuseo = buildOpcionesMuseo(consigna);
+
   return (
     <div className="overf general">
       <Header2 />
       <div className="progreso">
-     <Progreso
-  current={Math.max(0, idx)}
-  total={Math.max(renderList.length, 1)}
-/>
-</div>
+        <Progreso
+          current={Math.max(0, idx)}
+          total={Math.max(renderList.length, 1)}
+        />
+      </div>
+
       <section className="seccionActividad">
-     
-     
         {consigna.enunciado && (
           <h2 className="enunciado">{consigna.enunciado}</h2>
         )}
 
-   
-
-
-        {/* Media: imagen y/o audio si existen */}
         {imageOptimized && (
           <img
             className="imagenConsigna"
@@ -176,64 +209,62 @@ export default function Actividad() {
         )}
         {audioSrc && <audio controls src={audioSrc} className="audioPlayer" />}
 
-        {/* RULETA */}
-        {tipo === "ruleta" ? (
-          <Ruleta
-            consignaId={consigna.id}
-            opciones={consigna.opciones || []}
-            forceWin={Boolean(consigna.forceWin)}
-            winIndex={
-              Number.isFinite(consigna?.winIndex) ? consigna.winIndex : 0
-            }
-            winDelayMs={consigna.winDelayMs || 600}
-            onWin={() => {
-              try {
-                correctRef.current?.play();
-              } catch {}
-            }}
-            onFinish={seguir}
-          />
-        ) : (
-          <>
-            {/* Si NO requiere respuesta: solo botón de continuar */}
-            {skipAnswer ? (
-              <div>
-                <button className="buttonPpal" onClick={seguir}>
-                  {nextId ? "Continuar" : "Terminar"}
-                </button>
-              </div>
-            ) : (
-              // Si requiere respuesta: input + botón único
-              <div className="inputDiv">
-                <input
-                  className="inputRta"
-                  value={respuesta}
-                  onChange={(e) => {
-                    setRespuesta(e.target.value);
-                    setOk(null);
-                  }}
-                  placeholder="Tu respuesta"
-                />
-                <button className="btnSiguiente" onClick={handleNext}>
-                  {nextId ? "Siguiente" : "Terminar"}
-                </button>
-              </div>
-            )}
+     {tipo === "ruleta" ? (
 
-            {/* Feedback (solo cuando hay respuesta) */}
-            {!skipAnswer && ok === true && (
-              <div style={{ color: "green", fontWeight: 700 }}>¡Correcto!</div>
-            )}
-            {!skipAnswer && ok === false && (
-              <div style={{ color: "crimson", fontWeight: 700 }}>
-                No es correcto. Probá de nuevo.
-              </div>
-            )}
-          </>
-        )}
+<RuletaMuseoSub
+  consignaId={consigna.id}
+  opciones={opcionesMuseo}
+  size={340}
+  outerSegments={8}
+  innerSegments={8}
+  ratios={{ inner: 0.26, diamond: 0.64 }}
+  colorsByRegion={MUSEO_COLORS}
+  labelVisibility={{ outer: true, diamond: false, inner: false }}
+  spinDurationMs={6000}
+  spinTurns={7}
+  // preferOptionColors={false} // (default) usa paleta del cuadro
+  onWin={() => { try { correctRef.current?.play(); } catch {} }}
+  onFinish={seguir}
+/>
+
+) : (
+  <>
+    {skipAnswer ? (
+      <div>
+        <button className="buttonPpal" onClick={seguir}>
+          {nextId ? "Continuar" : "Terminar"}
+        </button>
+      </div>
+    ) : (
+      <div className="inputDiv">
+        <input
+          className="inputRta"
+          value={respuesta}
+          onChange={(e) => {
+            setRespuesta(e.target.value);
+            setOk(null);
+          }}
+          placeholder="Tu respuesta"
+        />
+        <button className="btnSiguiente" onClick={handleNext}>
+          {nextId ? "Siguiente" : "Terminar"}
+        </button>
+      </div>
+    )}
+
+    {!skipAnswer && ok === true && (
+      <div style={{ color: "green", fontWeight: 700 }}>¡Correcto!</div>
+    )}
+    {!skipAnswer && ok === false && (
+      <div style={{ color: "crimson", fontWeight: 700 }}>
+        No es correcto. Probá de nuevo.
+      </div>
+    )}
+  </>
+)}
+
       </section>
 
-      {/* Sonidos */}
       <audio ref={correctRef} src={CorrectSound} />
       <audio ref={wrongRef} src={WrongSound} />
     </div>

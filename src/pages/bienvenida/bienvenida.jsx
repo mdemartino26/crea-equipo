@@ -39,11 +39,6 @@ navigate(path);
      
       <button className="buttonPpal titila"  onClick={comenzar}>COMENZAR</button>
 
-      <button className="buttonPpal">
-        <Link to="/reglas" className="enlace">
-          Ver reglas
-        </Link></button>
-      
     </div>
   );
 }
