@@ -6,7 +6,12 @@
     height: 100vh;
 }
 
-.mainHeight{
-    height: 42vh;
+.main{
+    height: 90vh;
     align-content: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff56 ;
 }

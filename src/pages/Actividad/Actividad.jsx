@@ -26,7 +26,7 @@ import WrongSound from "../../assets/sounds/wrong.mp3";
 const MUSEO_COLORS = {
   outer: ["#F04A1D","#FFD23F","#9EE06E","#26B36A","#1E88E5","#2CB1C9","#E83E8C","#D72638"],
   diamond: ["#F06292","#90A4AE","#D84315","#F9D34E"],
-  inner: ["#C62828","#2E7D32","#1976D2","#FBC02D","#8E24AA","#00ACC1","#EF6C00","#43A047"],
+  inner: ["#C62828","#2E7D32","#1976D2","#8E24AA","#00ACC1","#EF6C00","#43A047"],
 };
 
 // ---------- Popup genérico ----------
@@ -155,7 +155,7 @@ function buildOpcionesMuseo(consigna) {
 
 export default function Actividad() {
   const { id } = useParams();
-  const navigate = useNavigate();
+ 
 
   const [consigna, setConsigna] = useState(null);
   const [lista, setLista] = useState([]);
@@ -186,7 +186,7 @@ export default function Actividad() {
   function showToast({ title = "", msg = "", autoCloseMs = 3000 }) {
     setPopupTitle(title);
     setPopupMsg(msg);
-    setPopupActions([]); // sin botones -> se cierra solo
+    setPopupActions([]);
     setPopupOpen(true);
     if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
     popupTimerRef.current = setTimeout(() => closePopup(), autoCloseMs);
@@ -231,7 +231,7 @@ export default function Actividad() {
     return () => unsub();
   }, [id]);
 
-  // Lista completa ordenada
+  // Lista completa ordenada (todas, visibles y ocultas)
   useEffect(() => {
     const q = query(collection(db, "consignas"), orderBy("orden", "asc"));
     const unsub = onSnapshotCol(q, (snap) => {
@@ -240,22 +240,51 @@ export default function Actividad() {
     return () => unsub();
   }, []);
 
-  // Visibles primero, luego ocultas (navegación estable)
-  const renderList = useMemo(() => {
-    const vis = lista.filter((x) => x.visible);
-    const hid = lista.filter((x) => !x.visible);
-    return [...vis, ...hid];
-  }, [lista]);
+  // ======== separar visibles/ocultas ========
+  const visibles = useMemo(() => lista.filter((x) => x.visible), [lista]);
+  const ocultas  = useMemo(() => lista.filter((x) => !x.visible), [lista]);
 
-  const idx = useMemo(
-    () => renderList.findIndex((x) => x.id === id),
-    [renderList, id]
-  );
-  const nextId =
-    idx >= 0 && idx < renderList.length - 1 ? renderList[idx + 1].id : null;
+  // Navegación estable: visibles primero y luego ocultas
+  const renderList = useMemo(() => [...visibles, ...ocultas], [visibles, ocultas]);
+
+  // Índices
+  const idx = useMemo(() => renderList.findIndex((x) => x.id === id), [renderList, id]);
+  const idxVis = useMemo(() => visibles.findIndex((x) => x.id === id), [visibles, id]);
+
+  // Próxima visible (nunca una oculta)
+  const nextVisibleId = useMemo(() => {
+    if (!id) return visibles[0]?.id ?? null;
+
+    // si estoy en visibles: siguiente visible
+    if (idxVis >= 0) {
+      return idxVis < visibles.length - 1 ? visibles[idxVis + 1].id : null;
+    }
+    // si estoy en una oculta: busco la próxima visible hacia adelante en el orden total
+    const posAll = renderList.findIndex((x) => x.id === id);
+    if (posAll >= 0) {
+      for (let i = posAll + 1; i < renderList.length; i++) {
+        if (renderList[i].visible) return renderList[i].id;
+      }
+    }
+    return null; // no hay más visibles
+  }, [id, visibles, idxVis, renderList]);
+
+  // Progreso: solo visibles
+  const progCurrent = idxVis >= 0 ? idxVis : Math.max(visibles.length - 1, 0);
+  const progTotal = Math.max(visibles.length, 1);
+
+  // Si caemos en una consigna oculta, redirigimos a la próxima visible o terminamos
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (consigna && consigna.visible === false) {
+      if (nextVisibleId) navigate(`/actividad/${nextVisibleId}`, { replace: true });
+      else navigate("/findejuego", { replace: true });
+    }
+  }, [consigna?.id, consigna?.visible, nextVisibleId, navigate]);
+  // ==========================================
 
   const seguir = () => {
-    if (nextId) navigate(`/actividad/${nextId}`);
+    if (nextVisibleId) navigate(`/actividad/${nextVisibleId}`);
     else navigate("/findejuego");
   };
 
@@ -264,16 +293,11 @@ export default function Actividad() {
     (consigna?.tipo || "") === "confirmar" || consigna?.requiereConfirmacion === true;
 
   const handleNext = () => {
-    // Confirmación previa si corresponde (no auto-close)
     if (needsConfirm) {
-      showConfirm({
-        msg: "¿Estás seguro de que deseas continuar?",
-        onYes: seguir,
-      });
+      showConfirm({ msg: "¿Estás seguro de que deseas continuar?", onYes: seguir });
       return;
     }
 
-    // Si no requiere respuesta, avanzar directo
     const sol = norm(consigna?.respuestaCorrecta || "");
     const skipAnswer =
       consigna?.requiereRespuesta === false ||
@@ -285,27 +309,16 @@ export default function Actividad() {
       return;
     }
 
-    // Validación (texto)
     const r = norm(respuesta);
     if (r === sol) {
       setOk(true);
-      try {
-        if (correctRef.current) {
-          correctRef.current.currentTime = 0;
-          correctRef.current.play();
-        }
-      } catch {}
+      try { if (correctRef.current) { correctRef.current.currentTime = 0; correctRef.current.play(); } } catch {}
       showToast({ title: "¡Correcto!", msg: "Tu respuesta es correcta." });
       if (followTimerRef.current) clearTimeout(followTimerRef.current);
       followTimerRef.current = setTimeout(() => seguir(), 3000);
     } else {
       setOk(false);
-      try {
-        if (wrongRef.current) {
-          wrongRef.current.currentTime = 0;
-          wrongRef.current.play();
-        }
-      } catch {}
+      try { if (wrongRef.current) { wrongRef.current.currentTime = 0; wrongRef.current.play(); } } catch {}
       showToast({ title: "Incorrecto", msg: "No es correcto. Probá de nuevo." });
     }
   };
@@ -333,27 +346,20 @@ export default function Actividad() {
   const audioSrc =
     consigna.audioURL ||
     (tipo === "audio" && consigna.mediaURL ? consigna.mediaURL : null);
-  const imageOptimized = imageSrc
-    ? cldUrl(imageSrc, "f_auto,q_auto,w_1000")
-    : null;
+  const imageOptimized = imageSrc ? cldUrl(imageSrc, "f_auto,q_auto,w_1000") : null;
 
-  // ✅ ahora es una FUNCIÓN (no hook), así que no viola reglas
   const opcionesMuseo = buildOpcionesMuseo(consigna);
 
   return (
     <div className="overf general">
       <Header2 />
+
       <div className="progreso">
-        <Progreso
-          current={Math.max(0, idx)}
-          total={Math.max(renderList.length, 1)}
-        />
+        <Progreso current={progCurrent} total={progTotal} />
       </div>
 
       <section className="seccionActividad">
-        {consigna.enunciado && (
-          <h2 className="enunciado">{consigna.enunciado}</h2>
-        )}
+        {consigna.enunciado && <h2 className="enunciado">{consigna.enunciado}</h2>}
 
         {imageOptimized && (
           <img
@@ -362,30 +368,27 @@ export default function Actividad() {
             alt={consigna.titulo || "consigna"}
             loading="lazy"
             decoding="async"
+            height="250px"
           />
         )}
         {audioSrc && <audio controls src={audioSrc} className="audioPlayer" />}
 
-        {/* ⚠️ Bloque de ruleta intacto */}
         {tipo === "ruleta" ? (
-
-<RuletaMuseoSub
-  consignaId={consigna.id}
-  opciones={opcionesMuseo}
-  size={300}
-  outerSegments={8}
-  innerSegments={8}
-  ratios={{ inner: 0.26, diamond: 0.64 }}
-  colorsByRegion={MUSEO_COLORS}
-  labelVisibility={{ outer: true, diamond: false, inner: false }}
-  spinDurationMs={6000}
-  spinTurns={7}
-  // preferOptionColors={false} // (default) usa paleta del cuadro
-  onWin={() => { try { correctRef.current?.play(); } catch {} }}
-  onFinish={seguir}
-/>
-
-) : (
+          <RuletaMuseoSub
+            consignaId={consigna.id}
+            opciones={opcionesMuseo}
+            size={300}
+            outerSegments={8}
+            innerSegments={8}
+            ratios={{ inner: 0.26, diamond: 0.64 }}
+            colorsByRegion={MUSEO_COLORS}
+            labelVisibility={{ outer: true, diamond: false, inner: false }}
+            spinDurationMs={6000}
+            spinTurns={7}
+            onWin={() => { try { correctRef.current?.play(); } catch {} }}
+            onFinish={seguir}
+          />
+        ) : (
           <>
             {skipAnswer ? (
               <div>
@@ -393,17 +396,13 @@ export default function Actividad() {
                   className="btnSiguiente"
                   onClick={() => {
                     if (needsConfirm) {
-                      // Confirmación con botones (no auto-close)
-                      showConfirm({
-                        msg: "¿Estás seguro de que deseas continuar?",
-                        onYes: seguir,
-                      });
+                      showConfirm({ msg: "¿Estás seguro de que deseas continuar?", onYes: seguir });
                     } else {
                       seguir();
                     }
                   }}
                 >
-                  {nextId ? "Continuar" : "Terminar"}
+                  {nextVisibleId ? "Continuar" : "Terminar"}
                 </button>
               </div>
             ) : (
@@ -418,31 +417,15 @@ export default function Actividad() {
                   placeholder="Tu respuesta"
                 />
                 <button className="btnSiguiente" onClick={handleNext}>
-                  {nextId ? "Siguiente" : "Terminar"}
+                  {nextVisibleId ? "Siguiente" : "Terminar"}
                 </button>
               </div>
             )}
-
-            {/* oculto los cartelitos inline porque ahora usamos popups */}
-            {/* {!skipAnswer && ok === true && (
-              <div style={{ color: "green", fontWeight: 700 }}>¡Correcto!</div>
-            )}
-            {!skipAnswer && ok === false && (
-              <div style={{ color: "crimson", fontWeight: 700 }}>
-                No es correcto. Probá de nuevo.
-              </div>
-            )} */}
           </>
         )}
       </section>
 
-      {/* POPUP */}
-      <Popup
-        open={popupOpen}
-        title={popupTitle}
-        onClose={closePopup}
-        actions={popupActions}
-      >
+      <Popup open={popupOpen} title={popupTitle} onClose={closePopup} actions={popupActions}>
         {popupMsg}
       </Popup>
 

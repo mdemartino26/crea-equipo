@@ -9,7 +9,7 @@
 }
 
 .enunciado {
-  font-size: 1.3em;
+  font-size: 1em;
   font-weight: 500;
   padding: 5% 0 5% 0;
   white-space: pre-line;
@@ -24,11 +24,11 @@
 }
 
 .imagenConsigna {
-  width: 80%;
-  height: auto;
-  border-radius: 10;
+  width: auto;
   margin-bottom: 5%;
   border-radius: 6%;
+  max-width: 80%;
+  object-fit: contain;
 }
 
 .audioPlayer{
