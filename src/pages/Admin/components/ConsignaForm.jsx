@@ -26,6 +26,14 @@ async function uploadToCloudinary(file, kind /* 'image'|'audio' */) {
   return json.secure_url;
 }
 
+// util chiquita: transforma textarea en array (split por líneas o por "|")
+function parseMulti(text = "") {
+  return text
+    .split(/\r?\n|\|/g)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
   const [form, setForm] = useState({
     obra: "",
@@ -34,6 +42,9 @@ export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
     respuestaCorrecta: "",
     orden: defaultOrden,
   });
+
+  // NUEVO: campo de texto para múltiples respuestas
+  const [respuestasCorrectasText, setRespuestasCorrectasText] = useState("");
 
   // NUEVO: bandera para omitir respuesta en la consigna
   const [requiereRespuesta, setRequiereRespuesta] = useState(true);
@@ -61,8 +72,12 @@ export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
     const esTipoSinRespuesta = form.tipo === "ruleta" || form.tipo === "confirmar";
     const debePedirRespuesta = requiereRespuesta && !esTipoSinRespuesta;
 
-    if (debePedirRespuesta && !form.respuestaCorrecta.trim()) {
-      return "Falta la respuesta correcta.";
+    const arr = parseMulti(respuestasCorrectasText);
+    const tieneArray = arr.length > 0;
+    const tieneSingle = !!form.respuestaCorrecta.trim();
+
+    if (debePedirRespuesta && !tieneArray && !tieneSingle) {
+      return "Falta la respuesta correcta (completá al menos una).";
     }
 
     const o = Number(form.orden);
@@ -113,16 +128,26 @@ export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
       const esTipoSinRespuesta = form.tipo === "ruleta" || form.tipo === "confirmar";
       const requiere = esTipoSinRespuesta ? false : Boolean(requiereRespuesta);
 
+      // construir array desde textarea + single de respaldo
+      const arr = parseMulti(respuestasCorrectasText);
+      const single = form.respuestaCorrecta.trim();
+      const respuestasCorrectas = Array.from(
+        new Set([...(arr || []), ...(single ? [single] : [])])
+      );
+
       const payload = {
         obra: form.obra.trim(),
         enunciado: form.enunciado.trim(),
         tipo: form.tipo, // 'texto' | 'ruleta' | 'confirmar'
-        requiereRespuesta: requiere, // ← NUEVO campo en Firestore
-        respuestaCorrecta: requiere ? form.respuestaCorrecta.trim() : "",
+        requiereRespuesta: requiere,
+        // Compatibilidad: dejamos respuestaCorrecta como primera variante (si existe)
+        respuestaCorrecta: requiere && respuestasCorrectas.length ? respuestasCorrectas[0] : "",
+        // Nuevo array:
+        respuestasCorrectas: requiere && respuestasCorrectas.length ? respuestasCorrectas : [],
         // Medios opcionales
         imageURL: finalImage || null,
         audioURL: finalAudio || null,
-        // Compatibilidad con consignas viejas:
+        // Compat con consignas viejas:
         mediaURL: null,
         visible: true,
         orden: Number(form.orden) || defaultOrden,
@@ -140,6 +165,7 @@ export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
         respuestaCorrecta: "",
         orden: (Number(form.orden) || defaultOrden) + 10,
       });
+      setRespuestasCorrectasText("");
       setRequiereRespuesta(true);
       setImgEnabled(false);
       setImgURL("");
@@ -181,7 +207,6 @@ export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
                 onChange={(e) => {
                   const nuevo = e.target.value;
                   setForm((f) => ({ ...f, tipo: nuevo }));
-                  // si es un tipo sin respuesta, forzamos la bandera en false
                   if (nuevo === "ruleta" || nuevo === "confirmar") {
                     setRequiereRespuesta(false);
                   }
@@ -204,7 +229,6 @@ export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
               />
             </label>
 
-            {/* NUEVO: switch requiere respuesta (deshabilitado para tipos que no la usan) */}
             <label title="Desmarcá si esta consigna no tiene respuesta (solo confirmar)">
               <input
                 type="checkbox"
@@ -216,15 +240,23 @@ export default function ConsignaForm({ isOpen, defaultOrden = 10 }) {
             </label>
           </div>
 
-          {/* Mostrar input de respuesta solo si realmente se requiere */}
+          {/* Respuestas múltiples + single compat */}
           {requiereRespuesta && form.tipo !== "ruleta" && form.tipo !== "confirmar" && (
-            <input
-              placeholder="Respuesta correcta *"
-              value={form.respuestaCorrecta}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, respuestaCorrecta: e.target.value }))
-              }
-            />
+            <>
+              <textarea
+                placeholder={"Respuestas correctas (una por línea o separadas por |)\nEj: 29\nveintinueve"}
+                rows={3}
+                value={respuestasCorrectasText}
+                onChange={(e) => setRespuestasCorrectasText(e.target.value)}
+              />
+              <input
+                placeholder="Respuesta correcta (compatibilidad, opcional si arriba ya pusiste)"
+                value={form.respuestaCorrecta}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, respuestaCorrecta: e.target.value }))
+                }
+              />
+            </>
           )}
 
           {/* IMAGEN */}

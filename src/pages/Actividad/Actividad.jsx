@@ -23,12 +23,89 @@ import "./styles.css";
 import CorrectSound from "../../assets/sounds/correct.mp3";
 import WrongSound from "../../assets/sounds/wrong.mp3";
 
- const MUSEO_COLORS = {
-  outer:   ["#F04A1D","#FFD23F","#9EE06E","#26B36A","#1E88E5","#2CB1C9","#E83E8C","#D72638"],
+const MUSEO_COLORS = {
+  outer: ["#F04A1D","#FFD23F","#9EE06E","#26B36A","#1E88E5","#2CB1C9","#E83E8C","#D72638"],
   diamond: ["#F06292","#90A4AE","#D84315","#F9D34E"],
-  inner:   ["#C62828","#2E7D32","#1976D2","#FBC02D","#8E24AA","#00ACC1","#EF6C00","#43A047"],
+  inner: ["#C62828","#2E7D32","#1976D2","#FBC02D","#8E24AA","#00ACC1","#EF6C00","#43A047"],
 };
 
+// ---------- Popup genérico ----------
+function Popup({ open, title, children, actions, onClose }) {
+  if (!open) return null;
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="popup-backdrop"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,.45)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999,
+        padding: 16,
+      }}
+    >
+      <div
+        className="popup-card"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(520px, 96vw)",
+          background: "#fff",
+          borderRadius: 16,
+          boxShadow: "0 10px 30px rgba(0,0,0,.25)",
+          overflow: "hidden",
+        }}
+      >
+        {title ? (
+          <div
+            style={{
+              padding: "14px 18px",
+              borderBottom: "1px solid #eee",
+              fontWeight: 700,
+              fontSize: 18,
+            }}
+          >
+            {title}
+          </div>
+        ) : null}
+        <div style={{ padding: 18, fontSize: 16 }}>{children}</div>
+        {Array.isArray(actions) && actions.length > 0 ? (
+          <div
+            style={{
+              padding: 14,
+              borderTop: "1px solid #eee",
+              display: "flex",
+              gap: 10,
+              justifyContent: "flex-end",
+            }}
+          >
+            {actions.map((a, i) => (
+              <button
+                key={i}
+                onClick={a.onClick}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  border: "1px solid #ddd",
+                  background: a.primary ? "#111" : "#f7f7f7",
+                  color: a.primary ? "#fff" : "#111",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 // --- util normalizador ---
 function norm(s = "") {
@@ -89,6 +166,60 @@ export default function Actividad() {
   const correctRef = useRef(null);
   const wrongRef = useRef(null);
 
+  // --------- Estado y helpers de Popup (toasts 3s + confirmación) ----------
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [popupTitle, setPopupTitle] = useState("");
+  const [popupMsg, setPopupMsg] = useState("");
+  const [popupActions, setPopupActions] = useState([]);
+  const popupTimerRef = useRef(null);
+  const followTimerRef = useRef(null);
+
+  const closePopup = () => {
+    setPopupOpen(false);
+    setPopupActions([]);
+    if (popupTimerRef.current) {
+      clearTimeout(popupTimerRef.current);
+      popupTimerRef.current = null;
+    }
+  };
+
+  function showToast({ title = "", msg = "", autoCloseMs = 3000 }) {
+    setPopupTitle(title);
+    setPopupMsg(msg);
+    setPopupActions([]); // sin botones -> se cierra solo
+    setPopupOpen(true);
+    if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
+    popupTimerRef.current = setTimeout(() => closePopup(), autoCloseMs);
+  }
+
+  function showConfirm({ msg, onYes, yesLabel = "Sí", noLabel = "No" }) {
+    if (popupTimerRef.current) {
+      clearTimeout(popupTimerRef.current);
+      popupTimerRef.current = null;
+    }
+    setPopupTitle("Confirmación");
+    setPopupMsg(msg);
+    setPopupActions([
+      { label: noLabel, onClick: () => closePopup() },
+      {
+        label: yesLabel,
+        primary: true,
+        onClick: () => {
+          closePopup();
+          onYes?.();
+        },
+      },
+    ]);
+    setPopupOpen(true);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
+      if (followTimerRef.current) clearTimeout(followTimerRef.current);
+    };
+  }, []);
+
   // Doc actual
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "consignas", id), (snap) => {
@@ -128,11 +259,34 @@ export default function Actividad() {
     else navigate("/findejuego");
   };
 
-  const handleNext = () => {
-    const sol = norm(consigna?.respuestaCorrecta || "");
-    if (!sol) return seguir();
-    const r = norm(respuesta);
+  // ¿Consigna que pide confirmación?
+  const needsConfirm =
+    (consigna?.tipo || "") === "confirmar" || consigna?.requiereConfirmacion === true;
 
+  const handleNext = () => {
+    // Confirmación previa si corresponde (no auto-close)
+    if (needsConfirm) {
+      showConfirm({
+        msg: "¿Estás seguro de que deseas continuar?",
+        onYes: seguir,
+      });
+      return;
+    }
+
+    // Si no requiere respuesta, avanzar directo
+    const sol = norm(consigna?.respuestaCorrecta || "");
+    const skipAnswer =
+      consigna?.requiereRespuesta === false ||
+      ["confirmar", "whatsapp", "paso", "info"].includes(consigna?.tipo || "") ||
+      !consigna?.respuestaCorrecta;
+
+    if (skipAnswer) {
+      seguir();
+      return;
+    }
+
+    // Validación (texto)
+    const r = norm(respuesta);
     if (r === sol) {
       setOk(true);
       try {
@@ -141,7 +295,9 @@ export default function Actividad() {
           correctRef.current.play();
         }
       } catch {}
-      setTimeout(seguir, 500);
+      showToast({ title: "¡Correcto!", msg: "Tu respuesta es correcta." });
+      if (followTimerRef.current) clearTimeout(followTimerRef.current);
+      followTimerRef.current = setTimeout(() => seguir(), 3000);
     } else {
       setOk(false);
       try {
@@ -150,6 +306,7 @@ export default function Actividad() {
           wrongRef.current.play();
         }
       } catch {}
+      showToast({ title: "Incorrecto", msg: "No es correcto. Probá de nuevo." });
     }
   };
 
@@ -209,7 +366,8 @@ export default function Actividad() {
         )}
         {audioSrc && <audio controls src={audioSrc} className="audioPlayer" />}
 
-     {tipo === "ruleta" ? (
+        {/* ⚠️ Bloque de ruleta intacto */}
+        {tipo === "ruleta" ? (
 
 <RuletaMuseoSub
   consignaId={consigna.id}
@@ -228,42 +386,65 @@ export default function Actividad() {
 />
 
 ) : (
-  <>
-    {skipAnswer ? (
-      <div>
-        <button className="buttonPpal" onClick={seguir}>
-          {nextId ? "Continuar" : "Terminar"}
-        </button>
-      </div>
-    ) : (
-      <div className="inputDiv">
-        <input
-          className="inputRta"
-          value={respuesta}
-          onChange={(e) => {
-            setRespuesta(e.target.value);
-            setOk(null);
-          }}
-          placeholder="Tu respuesta"
-        />
-        <button className="btnSiguiente" onClick={handleNext}>
-          {nextId ? "Siguiente" : "Terminar"}
-        </button>
-      </div>
-    )}
+          <>
+            {skipAnswer ? (
+              <div>
+                <button
+                  className="btnSiguiente"
+                  onClick={() => {
+                    if (needsConfirm) {
+                      // Confirmación con botones (no auto-close)
+                      showConfirm({
+                        msg: "¿Estás seguro de que deseas continuar?",
+                        onYes: seguir,
+                      });
+                    } else {
+                      seguir();
+                    }
+                  }}
+                >
+                  {nextId ? "Continuar" : "Terminar"}
+                </button>
+              </div>
+            ) : (
+              <div className="inputDiv">
+                <input
+                  className="inputRta"
+                  value={respuesta}
+                  onChange={(e) => {
+                    setRespuesta(e.target.value);
+                    setOk(null);
+                  }}
+                  placeholder="Tu respuesta"
+                />
+                <button className="btnSiguiente" onClick={handleNext}>
+                  {nextId ? "Siguiente" : "Terminar"}
+                </button>
+              </div>
+            )}
 
-    {!skipAnswer && ok === true && (
-      <div style={{ color: "green", fontWeight: 700 }}>¡Correcto!</div>
-    )}
-    {!skipAnswer && ok === false && (
-      <div style={{ color: "crimson", fontWeight: 700 }}>
-        No es correcto. Probá de nuevo.
-      </div>
-    )}
-  </>
-)}
-
+            {/* oculto los cartelitos inline porque ahora usamos popups */}
+            {/* {!skipAnswer && ok === true && (
+              <div style={{ color: "green", fontWeight: 700 }}>¡Correcto!</div>
+            )}
+            {!skipAnswer && ok === false && (
+              <div style={{ color: "crimson", fontWeight: 700 }}>
+                No es correcto. Probá de nuevo.
+              </div>
+            )} */}
+          </>
+        )}
       </section>
+
+      {/* POPUP */}
+      <Popup
+        open={popupOpen}
+        title={popupTitle}
+        onClose={closePopup}
+        actions={popupActions}
+      >
+        {popupMsg}
+      </Popup>
 
       <audio ref={correctRef} src={CorrectSound} />
       <audio ref={wrongRef} src={WrongSound} />
