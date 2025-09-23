@@ -310,7 +310,7 @@ export default function RuletaMuseoSub({
       {result && (
         <div role="dialog" aria-modal="true"
           style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.4)", display:"grid", placeItems:"center", zIndex:50 }}>
-          <div style={{ background:"#fff", borderRadius:12, padding:20, width:"min(90vw,360px)", boxShadow:"0 12px 32px rgba(0,0,0,.25)", textAlign:"center" }}>
+          <div style={{ background:"#fff", color:"green", borderRadius:12, borderTop:"10px green solid", padding:20, width:"min(90vw,360px)", boxShadow:"0 12px 32px rgba(0,0,0,.25)", textAlign:"center" }}>
             <h3 style={{ margin:"0 0 8px 0" }}>Avanzaste</h3>
             <div style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>
               {result.label}

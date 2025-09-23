@@ -29,9 +29,17 @@ const MUSEO_COLORS = {
   inner: ["#C62828","#2E7D32","#1976D2","#8E24AA","#00ACC1","#EF6C00","#43A047"],
 };
 
-// ---------- Popup genérico ----------
-function Popup({ open, title, children, actions, onClose }) {
+// ---------- Popup genérico con tonos ----------
+function Popup({ open, title, children, actions, onClose, tone = "neutral" }) {
   if (!open) return null;
+
+  const PALETTE = {
+    success: { accent: "#2E7D32", soft: "#E8F5E9" },
+    error:   { accent: "#C62828", soft: "#FFEBEE" },
+    neutral: { accent: "#111111", soft: "#FFFFFF" },
+  };
+  const { accent, soft } = PALETTE[tone] || PALETTE.neutral;
+
   return (
     <div
       role="dialog"
@@ -58,8 +66,12 @@ function Popup({ open, title, children, actions, onClose }) {
           borderRadius: 16,
           boxShadow: "0 10px 30px rgba(0,0,0,.25)",
           overflow: "hidden",
+          border: `1px solid ${accent}22`,
+          outline: `4px solid ${accent}14`,
         }}
       >
+        <div style={{ height: 6, background: accent }} />
+
         {title ? (
           <div
             style={{
@@ -67,12 +79,16 @@ function Popup({ open, title, children, actions, onClose }) {
               borderBottom: "1px solid #eee",
               fontWeight: 700,
               fontSize: 18,
+              background: soft,
+              color: "#111",
             }}
           >
             {title}
           </div>
         ) : null}
+
         <div style={{ padding: 18, fontSize: 16 }}>{children}</div>
+
         {Array.isArray(actions) && actions.length > 0 ? (
           <div
             style={{
@@ -81,6 +97,7 @@ function Popup({ open, title, children, actions, onClose }) {
               display: "flex",
               gap: 10,
               justifyContent: "flex-end",
+              background: "#fafafa",
             }}
           >
             {actions.map((a, i) => (
@@ -90,8 +107,8 @@ function Popup({ open, title, children, actions, onClose }) {
                 style={{
                   padding: "10px 14px",
                   borderRadius: 10,
-                  border: "1px solid #ddd",
-                  background: a.primary ? "#111" : "#f7f7f7",
+                  border: a.primary ? `1px solid ${accent}` : "1px solid #ddd",
+                  background: a.primary ? accent : "#f7f7f7",
                   color: a.primary ? "#fff" : "#111",
                   fontWeight: 600,
                   cursor: "pointer",
@@ -121,7 +138,7 @@ function norm(s = "") {
 const normPos = (s = "") =>
   String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
-// --- función pura (NO hook) para armar opciones de la ruleta museo ---
+// --- función pura para armar opciones de la ruleta museo ---
 function buildOpcionesMuseo(consigna) {
   const baseTexts = ["sí", "intentá de nuevo", "que suerte!"];
   const raw =
@@ -155,7 +172,6 @@ function buildOpcionesMuseo(consigna) {
 
 export default function Actividad() {
   const { id } = useParams();
- 
 
   const [consigna, setConsigna] = useState(null);
   const [lista, setLista] = useState([]);
@@ -166,11 +182,12 @@ export default function Actividad() {
   const correctRef = useRef(null);
   const wrongRef = useRef(null);
 
-  // --------- Estado y helpers de Popup (toasts 3s + confirmación) ----------
+  // --------- Estado y helpers de Popup ----------
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupTitle, setPopupTitle] = useState("");
   const [popupMsg, setPopupMsg] = useState("");
   const [popupActions, setPopupActions] = useState([]);
+  const [popupTone, setPopupTone] = useState("neutral");
   const popupTimerRef = useRef(null);
   const followTimerRef = useRef(null);
 
@@ -183,7 +200,8 @@ export default function Actividad() {
     }
   };
 
-  function showToast({ title = "", msg = "", autoCloseMs = 3000 }) {
+  function showToast({ title = "", msg = "", autoCloseMs = 3000, tone = "neutral" }) {
+    setPopupTone(tone);
     setPopupTitle(title);
     setPopupMsg(msg);
     setPopupActions([]);
@@ -197,6 +215,7 @@ export default function Actividad() {
       clearTimeout(popupTimerRef.current);
       popupTimerRef.current = null;
     }
+    setPopupTone("neutral");
     setPopupTitle("Confirmación");
     setPopupMsg(msg);
     setPopupActions([
@@ -254,19 +273,16 @@ export default function Actividad() {
   // Próxima visible (nunca una oculta)
   const nextVisibleId = useMemo(() => {
     if (!id) return visibles[0]?.id ?? null;
-
-    // si estoy en visibles: siguiente visible
     if (idxVis >= 0) {
       return idxVis < visibles.length - 1 ? visibles[idxVis + 1].id : null;
     }
-    // si estoy en una oculta: busco la próxima visible hacia adelante en el orden total
     const posAll = renderList.findIndex((x) => x.id === id);
     if (posAll >= 0) {
       for (let i = posAll + 1; i < renderList.length; i++) {
         if (renderList[i].visible) return renderList[i].id;
       }
     }
-    return null; // no hay más visibles
+    return null;
   }, [id, visibles, idxVis, renderList]);
 
   // Progreso: solo visibles
@@ -288,7 +304,6 @@ export default function Actividad() {
     else navigate("/findejuego");
   };
 
-  // ¿Consigna que pide confirmación?
   const needsConfirm =
     (consigna?.tipo || "") === "confirmar" || consigna?.requiereConfirmacion === true;
 
@@ -313,17 +328,16 @@ export default function Actividad() {
     if (r === sol) {
       setOk(true);
       try { if (correctRef.current) { correctRef.current.currentTime = 0; correctRef.current.play(); } } catch {}
-      showToast({ title: "¡Correcto!", msg: "Continuá así." });
+      showToast({ title: "¡Correcto!", msg: "Continuá así.", tone: "success" });
       if (followTimerRef.current) clearTimeout(followTimerRef.current);
       followTimerRef.current = setTimeout(() => seguir(), 3000);
     } else {
       setOk(false);
       try { if (wrongRef.current) { wrongRef.current.currentTime = 0; wrongRef.current.play(); } } catch {}
-      showToast({ title: "Incorrecto", msg: "No es correcto. Probá nuevamente." });
+      showToast({ title: "Incorrecto", msg: "No es correcto. Probá nuevamente.", tone: "error" });
     }
   };
 
-  
   if (!consigna) {
     return (
       <div className="overf">
@@ -425,7 +439,13 @@ export default function Actividad() {
         )}
       </section>
 
-      <Popup open={popupOpen} title={popupTitle} onClose={closePopup} actions={popupActions}>
+      <Popup
+        open={popupOpen}
+        title={popupTitle}
+        onClose={closePopup}
+        actions={popupActions}
+        tone={popupTone}
+      >
         {popupMsg}
       </Popup>
 

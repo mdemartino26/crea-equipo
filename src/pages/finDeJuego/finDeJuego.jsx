@@ -23,7 +23,7 @@ function FinDeJuego() {
             <Header2/>
             <div className="main">
                 <h1> <strong>¡Felicitaciones!</strong></h1>
-                <h2><strong>Han ganado el juego :)</strong></h2>
+                <h2><strong>Han terminado la primera parte del juego. </strong></h2>
                 {/* Botón para reiniciar el juego */}
                 <button className="buttonPpal" onClick={handleRestart}>
                     Volver al inicio
