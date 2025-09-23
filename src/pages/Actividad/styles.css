@@ -12,6 +12,7 @@
   font-size: 1.3em;
   font-weight: 500;
   padding: 5% 0 5% 0;
+  white-space: pre-line;
 }
 
 .general {

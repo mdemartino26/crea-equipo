@@ -4,27 +4,36 @@ import { db } from "../../../firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { uploadToCloudinary } from "../../../lib/cloudinary";
 
-// util: transforma textarea en array (split por líneas o por "|")
+// utils
 function parseMulti(text = "") {
-  return text
+  return String(text)
     .split(/\r?\n|\|/g)
     .map((s) => s.trim())
     .filter(Boolean);
 }
+const toStr = (v) =>
+  v == null ? "" : typeof v === "string" ? v : String(v);
+
+// si viene array, usamos el primero; si viene número/otro, lo casteamos
+const normalizeSingle = (v) =>
+  Array.isArray(v) ? toStr(v[0] ?? "") : toStr(v);
 
 export default function EditConsignaModal({ item, onClose, onSaved }) {
+  const initialTitulo = toStr(item.titulo || item.obra || "");
+  const initialRespuestaSingle = normalizeSingle(item.respuestaCorrecta);
+
   const [form, setForm] = useState({
-    titulo: item.titulo || item.obra || "",
-    enunciado: item.enunciado || "",
-    tipo: item.tipo || "texto",
-    respuestaCorrecta: item.respuestaCorrecta || "",
-    mediaURL: item.mediaURL || "",
+    titulo: initialTitulo,
+    enunciado: toStr(item.enunciado || ""),
+    tipo: toStr(item.tipo || "texto"),
+    respuestaCorrecta: initialRespuestaSingle,   // SIEMPRE string
+    mediaURL: toStr(item.mediaURL || ""),
   });
 
-  // Inicializamos el textarea a partir del array existente (si lo hay)
+  // textarea inicial con el array si existe
   const initialMulti = useMemo(() => {
     const arr = Array.isArray(item.respuestasCorrectas) ? item.respuestasCorrectas : [];
-    return arr.join("\n");
+    return arr.map(toStr).join("\n");
   }, [item.respuestasCorrectas]);
 
   const [respuestasCorrectasText, setRespuestasCorrectasText] = useState(initialMulti);
@@ -39,7 +48,9 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
     setUploading(true);
     try {
       const up = await uploadToCloudinary(file, form.tipo);
-      setForm((f) => ({ ...f, mediaURL: up.url || up.secure_url || up }));
+      // up puede ser string o objeto
+      const url = (up && (up.secure_url || up.url)) || String(up || "");
+      setForm((f) => ({ ...f, mediaURL: url }));
     } catch (e) {
       alert("No se pudo subir el archivo");
     } finally {
@@ -53,23 +64,24 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
     try {
       setSaving(true);
 
-      // Construimos el array a guardar desde el textarea + single de compatibilidad
+      // construimos array desde textarea + single (todo como string)
       const arr = parseMulti(respuestasCorrectasText);
-      const single = (form.respuestaCorrecta || "").trim();
+      const singleStr = toStr(form.respuestaCorrecta).trim();
       const respuestasCorrectas = Array.from(
-        new Set([...(arr || []), ...(single ? [single] : [])])
+        new Set([...(arr || []), ...(singleStr ? [singleStr] : [])])
       );
 
       const payload = {
-        // Mantengo compat con naming: título puede estar en 'obra'
-        titulo: form.titulo || "",
-        obra: form.titulo || "", // si usás 'obra' en el resto del app
-        enunciado: form.enunciado || "",
-        tipo: form.tipo,
-        // Compatibilidad: dejamos single como primera alternativa si hay
-        respuestaCorrecta: respuestasCorrectas.length ? respuestasCorrectas[0] : (single || ""),
-        respuestasCorrectas, // <-- NUEVO ARRAY
-        mediaURL: form.tipo === "texto" ? null : (form.mediaURL || null),
+        // muchas pantallas usan "obra" como título; guardo ambos por compat
+        titulo: toStr(form.titulo),
+        obra: toStr(form.titulo),
+        enunciado: toStr(form.enunciado),
+        tipo: toStr(form.tipo),
+        respuestaCorrecta: respuestasCorrectas.length
+          ? toStr(respuestasCorrectas[0])
+          : singleStr, // compat
+        respuestasCorrectas, // nuevo array
+        mediaURL: form.tipo === "texto" ? null : (toStr(form.mediaURL) || null),
         updatedAt: serverTimestamp(),
       };
 
@@ -90,16 +102,25 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
         <h3>Editar consigna</h3>
         <form onSubmit={save} className="formEditar">
           <label className="inputEdit">Título
-            <input value={form.titulo} onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))} />
+            <input
+              value={toStr(form.titulo)}
+              onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
+            />
           </label>
           <label className="inputEdit">Enunciado
-            <textarea rows={4} value={form.enunciado}
-              onChange={(e) => setForm((f) => ({ ...f, enunciado: e.target.value }))} />
+            <textarea
+              rows={4}
+              value={toStr(form.enunciado)}
+              onChange={(e) => setForm((f) => ({ ...f, enunciado: e.target.value }))}
+            />
           </label>
 
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <label className="inputEdit">Tipo:&nbsp;
-              <select value={form.tipo} onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}>
+              <select
+                value={toStr(form.tipo)}
+                onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))}
+              >
                 <option value="texto">Texto</option>
                 <option value="imagen">Imagen</option>
                 <option value="audio">Audio</option>
@@ -109,12 +130,18 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
             {form.tipo !== "texto" && (
               <>
                 <label className="inputEdit">Media URL
-                  <input value={form.mediaURL} onChange={(e) => setForm((f) => ({ ...f, mediaURL: e.target.value }))} />
+                  <input
+                    value={toStr(form.mediaURL)}
+                    onChange={(e) => setForm((f) => ({ ...f, mediaURL: e.target.value }))}
+                  />
                 </label>
                 <div>
                   <small>o subir archivo</small><br />
-                  <input type="file" accept={accept}
-                    onChange={(e) => e.target.files?.[0] && uploadAndSet(e.target.files[0])} />
+                  <input
+                    type="file"
+                    accept={accept}
+                    onChange={(e) => e.target.files?.[0] && uploadAndSet(e.target.files[0])}
+                  />
                   {uploading && <span> Subiendo…</span>}
                 </div>
               </>
@@ -124,7 +151,7 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
               Respuestas correctas (una por línea o separadas por |)
               <textarea
                 rows={3}
-                value={respuestasCorrectasText}
+                value={toStr(respuestasCorrectasText)}
                 onChange={(e) => setRespuestasCorrectasText(e.target.value)}
                 placeholder={"Ej:\nConstelaciones\nconstelaciones\n29\nveintinueve"}
               />
@@ -132,9 +159,9 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
 
             <label className="inputEdit">Respuesta (compatibilidad)
               <input
-                value={form.respuestaCorrecta}
+                value={toStr(form.respuestaCorrecta)}
                 onChange={(e) => setForm((f) => ({ ...f, respuestaCorrecta: e.target.value }))}
-                placeholder="Se usará como primera del array si está vacío"
+                placeholder="Se usará como primera del array si arriba está vacío"
               />
             </label>
           </div>
@@ -151,4 +178,11 @@ export default function EditConsignaModal({ item, onClose, onSaved }) {
   );
 }
 
-const backdrop = { position:"fixed", inset:0, background:"rgba(0,0,0,.35)", display:"grid", placeItems:"center", zIndex:1000 };
+const backdrop = {
+  position:"fixed",
+  inset:0,
+  background:"rgba(0,0,0,.35)",
+  display:"grid",
+  placeItems:"center",
+  zIndex:1000
+};
