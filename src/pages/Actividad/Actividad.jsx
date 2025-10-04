@@ -328,13 +328,13 @@ export default function Actividad() {
     if (r === sol) {
       setOk(true);
       try { if (correctRef.current) { correctRef.current.currentTime = 0; correctRef.current.play(); } } catch {}
-      showToast({ title: "¡Correcto!", msg: "Continuá así.", tone: "success" });
+      showToast({ title: "¡Correcto!", msg: "Continúen así.", tone: "success" });
       if (followTimerRef.current) clearTimeout(followTimerRef.current);
       followTimerRef.current = setTimeout(() => seguir(), 3000);
     } else {
       setOk(false);
       try { if (wrongRef.current) { wrongRef.current.currentTime = 0; wrongRef.current.play(); } } catch {}
-      showToast({ title: "Incorrecto", msg: "No es correcto. Probá nuevamente.", tone: "error" });
+      showToast({ title: "Incorrecto", msg: "No es correcto. Prueben nuevamente.", tone: "error" });
     }
   };
 
