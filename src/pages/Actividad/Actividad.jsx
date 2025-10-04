@@ -309,7 +309,7 @@ export default function Actividad() {
 
   const handleNext = () => {
     if (needsConfirm) {
-      showConfirm({ msg: "¿Estás seguro de que deseas continuar?", onYes: seguir });
+      showConfirm({ msg: "¿Están seguros  que desean continuar?", onYes: seguir });
       return;
     }
 
@@ -410,7 +410,7 @@ export default function Actividad() {
                   className="btnSiguiente"
                   onClick={() => {
                     if (needsConfirm) {
-                      showConfirm({ msg: "¿Estás seguro de que deseas continuar?", onYes: seguir });
+                      showConfirm({ msg: "¿Están seguros  que desean continuar? ", onYes: seguir });
                     } else {
                       seguir();
                     }
