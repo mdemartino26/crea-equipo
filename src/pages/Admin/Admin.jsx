@@ -29,7 +29,7 @@ export default function Admin() {
 
   const [editing, setEditing] = useState(null);
 
-  // --------- ⬇️ MOVER EL TOGGLE ACA (ANTES DE CUALQUIER return) ⬇️ ----------
+  // ---------- TOGGLE GLOBAL (persistente) ----------
   const STORAGE_KEY = "gameOn";
 
   const [gameOn, setGameOn] = useState(() => {
@@ -41,12 +41,19 @@ export default function Admin() {
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameOn));
-    window.dispatchEvent(new Event("gameon:change"));
-  }, [gameOn]);
+  localStorage.setItem("gameOn", JSON.stringify(gameOn));
+  window.dispatchEvent(new Event("gameon:change")); // <- necesario
 
+  if (!gameOn) {
+    // limpiar LS excepto el flag
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k !== "gameOn") localStorage.removeItem(k);
+    }
+  }
+}, [gameOn]);
   const toggleGame = () => setGameOn((v) => !v);
-  // --------- ⬆️ FIN DEL BLOQUE DE TOGGLE ⬆️ -------------------------------
+  // -------------------------------------------------
 
   useEffect(() => {
     const q = query(collection(db, "consignas"), orderBy("orden", "asc"));
@@ -192,6 +199,7 @@ export default function Admin() {
       <h1 className="adminTitulo">Administrador</h1>
 
       <div className="barraAcciones">
+        {/* Toggle ON/OFF */}
         <div
           style={{
             marginLeft: 12,

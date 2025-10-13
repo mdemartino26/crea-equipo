@@ -9,7 +9,6 @@ export default function Bienvenida() {
   const navigate = useNavigate();
   const STORAGE_KEY = "gameOn";
 
-
   const [activo, setActivo] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "false");
@@ -18,7 +17,7 @@ export default function Bienvenida() {
     }
   });
 
-
+  // sincroniza cuando el admin cambia el toggle (misma u otras pestañas)
   useEffect(() => {
     const sync = () => {
       try {
@@ -27,13 +26,18 @@ export default function Bienvenida() {
         setActivo(false);
       }
     };
-    window.addEventListener("storage", sync);        
-    window.addEventListener("gameon:change", sync); 
+    window.addEventListener("storage", sync);
+    window.addEventListener("gameon:change", sync);
     return () => {
       window.removeEventListener("storage", sync);
       window.removeEventListener("gameon:change", sync);
     };
   }, []);
+
+  // si está apagado, limpiá el lastGamePage
+  useEffect(() => {
+    if (!activo) localStorage.removeItem("lastGamePage");
+  }, [activo]);
 
   const comenzar = async () => {
     try {
@@ -56,17 +60,17 @@ export default function Bienvenida() {
   };
 
   return (
-    <div className="bienvenida-background bienvenidaCenter">
+    <div className="bienvenida-background overf bienvenidaCenter">
       <Header />
 
-
+      {/* Si juego APAGADO → solo el aviso */}
       {!activo && (
         <p className="desactivado" style={{ fontSize: "1.2em", opacity: 0.8 }}>
           El juego comenzará en breve
         </p>
       )}
 
-
+      {/* Si juego ENCENDIDO → solo el botón */}
       {activo && (
         <button className="buttonPpal titila" onClick={comenzar}>
           COMENZAR

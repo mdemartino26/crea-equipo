@@ -29,7 +29,34 @@ import FinDeJuego from "./pages/finDeJuego/finDeJuego";
 import Actividad from "./pages/Actividad/Actividad";
 import Admin from "./pages/Admin/Admin";
 
-const RESUME_KEY = "lastGamePage"; // <— nueva key solo para el juego
+const RESUME_KEY = "lastGamePage";
+const GAME_KEY = "gameOn";
+
+/* ---------- Guard: si gameOn = false → vuelve a "/" y limpia progreso ---------- */
+function RequireGameOn({ children }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const check = () => {
+      const on = JSON.parse(localStorage.getItem(GAME_KEY) ?? "false");
+      if (!on) {
+        localStorage.removeItem(RESUME_KEY);
+        navigate("/", { replace: true });
+      }
+    };
+    // chequeo inicial y listeners
+    check();
+    window.addEventListener("gameon:change", check);
+    window.addEventListener("storage", check);
+    return () => {
+      window.removeEventListener("gameon:change", check);
+      window.removeEventListener("storage", check);
+    };
+  }, [navigate]);
+
+  return children;
+}
+/* ------------------------------------------------------------------------------ */
 
 function App() {
   return (
@@ -45,21 +72,34 @@ function AppRoutes() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  // Al entrar a "/", si hay progreso del juego, lo retomamos
+  // Al entrar a "/", reanudar SOLO si el juego está encendido
   useEffect(() => {
     if (pathname === "/") {
-      const saved = localStorage.getItem(RESUME_KEY);
-      if (saved && saved !== "/") {
-        navigate(saved, { replace: true });
+      const on = JSON.parse(localStorage.getItem(GAME_KEY) ?? "false");
+      if (on) {
+        const saved = localStorage.getItem(RESUME_KEY);
+        if (saved && saved !== "/") {
+          navigate(saved, { replace: true });
+        }
+      } else {
+        // si está apagado, aseguro limpiar cualquier rastro de progreso
+        localStorage.removeItem(RESUME_KEY);
       }
     }
   }, [pathname, navigate]);
 
-  // Guardamos progreso SOLO en rutas del juego (no admin)
+  // Guardar progreso SOLO en rutas del juego (no admin) y solo si está encendido
   useEffect(() => {
+    const on = JSON.parse(localStorage.getItem(GAME_KEY) ?? "false");
     const isGameRoute =
-      pathname === "/reglas" || pathname.startsWith("/actividad/");
-    if (isGameRoute) {
+      pathname === "/reglas" ||
+      pathname.startsWith("/actividad/") ||
+      pathname.startsWith("/numero") ||
+      pathname === "/pitch" ||
+      pathname === "/fin1" ||
+      pathname === "/findejuego";
+
+    if (on && isGameRoute) {
       localStorage.setItem(RESUME_KEY, pathname);
     }
   }, [pathname]);
@@ -67,24 +107,149 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Bienvenida />} />
-      <Route path="/reglas" element={<Reglas />} />
-      <Route path="/numero1" element={<Numero1 />} />
-      <Route path="/numero2" element={<Numero2 />} />
-      <Route path="/numero3" element={<Numero3 />} />
-      <Route path="/numero5" element={<Numero5 />} />
-      <Route path="/numero6" element={<Numero6 />} />
-      <Route path="/numero7" element={<Numero7 />} />
-      <Route path="/numero8" element={<Numero8 />} />
-      <Route path="/numero9" element={<Numero9 />} />
-      <Route path="/numero10" element={<Numero10 />} />
-      <Route path="/numero11" element={<Numero11 />} />
-      <Route path="/numero12" element={<Numero12 />} />
-      <Route path="/numero14" element={<Numero14 />} />
-      <Route path="/pitch" element={<Pitch />} />
-      <Route path="/actividad/:id" element={<Actividad />} />
+
+      {/* Rutas del juego protegidas por el guard */}
+      <Route
+        path="/reglas"
+        element={
+          <RequireGameOn>
+            <Reglas />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/actividad/:id"
+        element={
+          <RequireGameOn>
+            <Actividad />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero1"
+        element={
+          <RequireGameOn>
+            <Numero1 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero2"
+        element={
+          <RequireGameOn>
+            <Numero2 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero3"
+        element={
+          <RequireGameOn>
+            <Numero3 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero5"
+        element={
+          <RequireGameOn>
+            <Numero5 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero6"
+        element={
+          <RequireGameOn>
+            <Numero6 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero7"
+        element={
+          <RequireGameOn>
+            <Numero7 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero8"
+        element={
+          <RequireGameOn>
+            <Numero8 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero9"
+        element={
+          <RequireGameOn>
+            <Numero9 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero10"
+        element={
+          <RequireGameOn>
+            <Numero10 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero11"
+        element={
+          <RequireGameOn>
+            <Numero11 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero12"
+        element={
+          <RequireGameOn>
+            <Numero12 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/numero14"
+        element={
+          <RequireGameOn>
+            <Numero14 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/pitch"
+        element={
+          <RequireGameOn>
+            <Pitch />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/fin1"
+        element={
+          <RequireGameOn>
+            <Fin1 />
+          </RequireGameOn>
+        }
+      />
+      <Route
+        path="/findejuego"
+        element={
+          <RequireGameOn>
+            <FinDeJuego />
+          </RequireGameOn>
+        }
+      />
+
+      {/* Admin sin guard */}
       <Route path="/administrador" element={<Admin />} />
-      <Route path="/fin1" element={<Fin1 />} />
-      <Route path="/findejuego" element={<FinDeJuego />} />
+
+      {/* fallback */}
       <Route path="*" element={<Bienvenida />} />
     </Routes>
   );
