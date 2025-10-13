@@ -29,6 +29,25 @@ export default function Admin() {
 
   const [editing, setEditing] = useState(null);
 
+  // --------- ⬇️ MOVER EL TOGGLE ACA (ANTES DE CUALQUIER return) ⬇️ ----------
+  const STORAGE_KEY = "gameOn";
+
+  const [gameOn, setGameOn] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "false");
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameOn));
+    window.dispatchEvent(new Event("gameon:change"));
+  }, [gameOn]);
+
+  const toggleGame = () => setGameOn((v) => !v);
+  // --------- ⬆️ FIN DEL BLOQUE DE TOGGLE ⬆️ -------------------------------
+
   useEffect(() => {
     const q = query(collection(db, "consignas"), orderBy("orden", "asc"));
     const unsub = onSnapshot(
@@ -54,18 +73,22 @@ export default function Admin() {
 
   const markDirty = () => setDirty(true);
 
-  // ordenar visibles primero si está activo el switch
   const buildRender = (arr) => {
     if (!groupHiddenLast) return [...arr];
     const vis = arr.filter((x) => Boolean(x.visible));
     const hid = arr.filter((x) => !Boolean(x.visible));
     return [...vis, ...hid];
   };
-  const renderList = useMemo(() => buildRender(draft), [draft, groupHiddenLast]);
+  const renderList = useMemo(
+    () => buildRender(draft),
+    [draft, groupHiddenLast]
+  );
 
   const toggleVisibleDraft = (id) => {
     setDraft((prev) => {
-      const next = prev.map((x) => (x.id === id ? { ...x, visible: !x.visible } : x));
+      const next = prev.map((x) =>
+        x.id === id ? { ...x, visible: !x.visible } : x
+      );
       return buildRender(next);
     });
     markDirty();
@@ -84,7 +107,6 @@ export default function Admin() {
     markDirty();
   };
 
-  // DnD (por id, para que funcione con la lista renderizada)
   const dragId = useRef(null);
   const onDragStart = (id) => (e) => {
     if (!reorderMode) return;
@@ -170,12 +192,37 @@ export default function Admin() {
       <h1 className="adminTitulo">Administrador</h1>
 
       <div className="barraAcciones">
+        <div
+          style={{
+            marginLeft: 12,
+            padding: "6px 10px",
+            border: "1px solid #ddd",
+            borderRadius: 8,
+          }}
+        >
+          <strong>Juego: {gameOn ? "ENCENDIDO" : "APAGADO"}</strong>{" "}
+          <button
+            type="button"
+            onClick={toggleGame}
+            className="btnOutline"
+            style={{
+              marginLeft: 8,
+              background: gameOn ? "#e74c3c" : "#2ecc71",
+              color: "#fff",
+              borderColor: "transparent",
+            }}
+          >
+            {gameOn ? "Apagar" : "Encender"}
+          </button>
+        </div>
+
         <div className="accOpcion">
-          <button onClick={() => setOpenForm((v) => !v)} className="btnFormulario">
+          <button
+            onClick={() => setOpenForm((v) => !v)}
+            className="btnFormulario"
+          >
             {openForm ? "▲ Cerrar formulario" : "＋ Nueva consigna"}
           </button>
-
-          
 
           <label style={{ userSelect: "none" }}>
             <input
@@ -206,7 +253,11 @@ export default function Admin() {
             onClick={guardarCambios}
             disabled={!canSave}
             className="btnOutline"
-            style={{ background: canSave ? "#0c7" : "#aaa", color: "#fff", borderColor: "transparent" }}
+            style={{
+              background: canSave ? "#0c7" : "#aaa",
+              color: "#fff",
+              borderColor: "transparent",
+            }}
           >
             {saving ? "Guardando..." : "Guardar cambios"}
           </button>
@@ -215,7 +266,9 @@ export default function Admin() {
 
       <ConsignaForm isOpen={openForm} defaultOrden={nextOrden} />
 
-      <hr style={{ border: 0, borderTop: "1px solid #eee", margin: "16px 0" }} />
+      <hr
+        style={{ border: 0, borderTop: "1px solid #eee", margin: "16px 0" }}
+      />
 
       <h2 style={{ marginTop: 0 }}>Listado de consignas</h2>
       <p style={{ opacity: 0.7, marginTop: -8 }}>
@@ -232,10 +285,11 @@ export default function Admin() {
             onDragOver={onDragOver(idx)}
             onDrop={onDrop(idx)}
           >
-            {/* handle / controles touch */}
             {!isTouch ? (
               <div className="dragNdrop" title="Arrastrar para reordenar">
-                <span style={{ cursor: reorderMode ? "grab" : "default" }}>☰</span>
+                <span style={{ cursor: reorderMode ? "grab" : "default" }}>
+                  ☰
+                </span>
               </div>
             ) : (
               <div className="touchReorder" aria-label="Reordenar">
@@ -252,7 +306,10 @@ export default function Admin() {
                   type="button"
                   className="btnIcon"
                   onClick={() =>
-                    moveByRenderIndex(it.id, Math.min(renderList.length - 1, idx + 1))
+                    moveByRenderIndex(
+                      it.id,
+                      Math.min(renderList.length - 1, idx + 1)
+                    )
                   }
                   disabled={idx === renderList.length - 1}
                   title="Bajar"
@@ -262,11 +319,11 @@ export default function Admin() {
               </div>
             )}
 
-            {/* info + controles */}
             <div className="datos">
               <h4 className="titulo">{it.obra || "(sin título)"}</h4>
               <div className="meta">
-                {(it.tipo ?? "texto")} {it.mediaURL ? "· con archivo" : "· sin archivo"} ·{" "}
+                {it.tipo ?? "texto"}{" "}
+                {it.mediaURL ? "· con archivo" : "· sin archivo"} ·{" "}
                 {it.visible ? "visible" : "oculto"}
               </div>
 
@@ -275,7 +332,9 @@ export default function Admin() {
                   <select
                     className="selectOutline"
                     value={idx + 1}
-                    onChange={(e) => moveByRenderIndex(it.id, Number(e.target.value) - 1)}
+                    onChange={(e) =>
+                      moveByRenderIndex(it.id, Number(e.target.value) - 1)
+                    }
                     title="Mover a posición…"
                   >
                     {renderList.map((_, i) => (
@@ -286,7 +345,11 @@ export default function Admin() {
                   </select>
                 </div>
 
-                <button type="button" className="btnAcc" onClick={() => setEditing(it)}>
+                <button
+                  type="button"
+                  className="btnAcc"
+                  onClick={() => setEditing(it)}
+                >
                   Editar
                 </button>
 
@@ -300,7 +363,12 @@ export default function Admin() {
               </div>
             </div>
 
-            <Link className="linkVer" to={`/actividad/${it.id}`} target="_blank" rel="noreferrer">
+            <Link
+              className="linkVer"
+              to={`/actividad/${it.id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               Ver
             </Link>
           </li>
