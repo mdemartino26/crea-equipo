@@ -33,6 +33,9 @@
   padding: 3%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   height: 60vh;
+
+   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .formEditar {
