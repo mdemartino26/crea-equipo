@@ -28,31 +28,24 @@ import FinDeJuego from "./pages/finDeJuego/finDeJuego";
 
 import Actividad from "./pages/Actividad/Actividad";
 import Admin from "./pages/Admin/Admin";
+import { useGameOn } from "./lib/gameState";
 
 const RESUME_KEY = "lastGamePage";
-const GAME_KEY = "gameOn";
 
-/* ---------- Guard: si gameOn = false → vuelve a "/" y limpia progreso ---------- */
+/* ---------- Guard: si el juego está apagado → vuelve a "/" y limpia progreso ----------
+   El estado viene de Firestore (config/game), así que funciona igual en
+   cualquier dispositivo. Mientras no llega la primera respuesta (ready=false)
+   no se redirige, para no sacar al jugador por error al recargar. */
 function RequireGameOn({ children }) {
   const navigate = useNavigate();
+  const { on, ready } = useGameOn();
 
   useEffect(() => {
-    const check = () => {
-      const on = JSON.parse(localStorage.getItem(GAME_KEY) ?? "false");
-      if (!on) {
-        localStorage.removeItem(RESUME_KEY);
-        navigate("/", { replace: true });
-      }
-    };
-    // chequeo inicial y listeners
-    check();
-    window.addEventListener("gameon:change", check);
-    window.addEventListener("storage", check);
-    return () => {
-      window.removeEventListener("gameon:change", check);
-      window.removeEventListener("storage", check);
-    };
-  }, [navigate]);
+    if (ready && !on) {
+      localStorage.removeItem(RESUME_KEY);
+      navigate("/", { replace: true });
+    }
+  }, [on, ready, navigate]);
 
   return children;
 }
@@ -71,26 +64,32 @@ function App() {
 function AppRoutes() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { on, ready } = useGameOn();
+
+  // Cuando el admin apaga el juego, cada dispositivo limpia su propio progreso
+  // (antes lo hacía el admin, pero solo podía limpiar su propio navegador).
+  useEffect(() => {
+    if (ready && !on && pathname !== "/administrador") {
+      localStorage.clear();
+    }
+  }, [on, ready, pathname]);
 
   // Al entrar a "/", reanudar SOLO si el juego está encendido
   useEffect(() => {
-    if (pathname === "/") {
-      const on = JSON.parse(localStorage.getItem(GAME_KEY) ?? "false");
-      if (on) {
-        const saved = localStorage.getItem(RESUME_KEY);
-        if (saved && saved !== "/") {
-          navigate(saved, { replace: true });
-        }
-      } else {
-        // si está apagado, aseguro limpiar cualquier rastro de progreso
-        localStorage.removeItem(RESUME_KEY);
+    if (!ready || pathname !== "/") return;
+    if (on) {
+      const saved = localStorage.getItem(RESUME_KEY);
+      if (saved && saved !== "/") {
+        navigate(saved, { replace: true });
       }
+    } else {
+      // si está apagado, aseguro limpiar cualquier rastro de progreso
+      localStorage.removeItem(RESUME_KEY);
     }
-  }, [pathname, navigate]);
+  }, [pathname, navigate, on, ready]);
 
   // Guardar progreso SOLO en rutas del juego (no admin) y solo si está encendido
   useEffect(() => {
-    const on = JSON.parse(localStorage.getItem(GAME_KEY) ?? "false");
     const isGameRoute =
       pathname === "/reglas" ||
       pathname.startsWith("/actividad/") ||
@@ -99,10 +98,10 @@ function AppRoutes() {
       pathname === "/fin1" ||
       pathname === "/findejuego";
 
-    if (on && isGameRoute) {
+    if (ready && on && isGameRoute) {
       localStorage.setItem(RESUME_KEY, pathname);
     }
-  }, [pathname]);
+  }, [pathname, on, ready]);
 
   return (
     <Routes>

@@ -10,6 +10,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useGameOn, setGameOn } from "../../lib/gameState";
 
 import ConsignaForm from "./components/ConsignaForm";
 import EditConsignaModal from "./components/EditConsignaModal";
@@ -29,31 +30,20 @@ export default function Admin() {
 
   const [editing, setEditing] = useState(null);
 
-  // ---------- TOGGLE GLOBAL (persistente) ----------
-  const STORAGE_KEY = "gameOn";
+  // ---------- TOGGLE GLOBAL (guardado en Firestore: config/game) ----------
+  // Lo ven todos los dispositivos en tiempo real. Cada jugador limpia su
+  // propio progreso local cuando detecta que el juego se apagó (ver App.js).
+  const { on: gameOn, ready: gameReady } = useGameOn();
 
-  const [gameOn, setGameOn] = useState(() => {
+  const toggleGame = async () => {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "false");
-    } catch {
-      return false;
+      await setGameOn(!gameOn);
+    } catch (e) {
+      console.error("No se pudo cambiar el estado del juego:", e);
+      alert("No se pudo cambiar el estado del juego. Revisá la conexión y las reglas de Firestore.");
     }
-  });
-
-  useEffect(() => {
-  localStorage.setItem("gameOn", JSON.stringify(gameOn));
-  window.dispatchEvent(new Event("gameon:change")); // <- necesario
-
-  if (!gameOn) {
-    // limpiar LS excepto el flag
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-      const k = localStorage.key(i);
-      if (k !== "gameOn") localStorage.removeItem(k);
-    }
-  }
-}, [gameOn]);
-  const toggleGame = () => setGameOn((v) => !v);
-  // -------------------------------------------------
+  };
+  // -----------------------------------------------------------------------
 
   useEffect(() => {
     const q = query(collection(db, "consignas"), orderBy("orden", "asc"));
@@ -208,10 +198,13 @@ export default function Admin() {
             borderRadius: 8,
           }}
         >
-          <strong>Juego: {gameOn ? "ENCENDIDO" : "APAGADO"}</strong>{" "}
+          <strong>
+            Juego: {!gameReady ? "..." : gameOn ? "ENCENDIDO" : "APAGADO"}
+          </strong>{" "}
           <button
             type="button"
             onClick={toggleGame}
+            disabled={!gameReady}
             className="btnOutline"
             style={{
               marginLeft: 8,

@@ -1,31 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGameOn } from "../../lib/gameState";
 
+// Nota: la versión que usa la app está en src/App.js. Esta copia queda
+// alineada con ella (estado en Firestore, no en localStorage).
 export default function RequireGameOn({ children }) {
   const navigate = useNavigate();
+  const { on, ready } = useGameOn();
 
   useEffect(() => {
-    const check = () => {
-      const on = JSON.parse(localStorage.getItem("gameOn") ?? "false");
-      if (!on) {
-
-        localStorage.removeItem("lastGamePage");
-
-        navigate("/", { replace: true });
-      }
-    };
-
-    // chequeo inmediato al montar
-    check();
-
-    // escucha cambios desde el admin:
-    window.addEventListener("gameon:change", check); // mismo tab
-    window.addEventListener("storage", check);       // otras pestañas
-    return () => {
-      window.removeEventListener("gameon:change", check);
-      window.removeEventListener("storage", check);
-    };
-  }, [navigate]);
+    if (ready && !on) {
+      localStorage.removeItem("lastGamePage");
+      navigate("/", { replace: true });
+    }
+  }, [on, ready, navigate]);
 
   return children;
 }
