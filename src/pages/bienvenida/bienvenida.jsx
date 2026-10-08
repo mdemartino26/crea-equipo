@@ -1,43 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/header/header";
 import { db } from "../../firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { useGameOn } from "../../lib/gameState";
 import "./styles.css";
 
 export default function Bienvenida() {
   const navigate = useNavigate();
-  const STORAGE_KEY = "gameOn";
 
-  const [activo, setActivo] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "false");
-    } catch {
-      return false;
-    }
-  });
-
-  // sincroniza cuando el admin cambia el toggle (misma u otras pestañas)
-  useEffect(() => {
-    const sync = () => {
-      try {
-        setActivo(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "false"));
-      } catch {
-        setActivo(false);
-      }
-    };
-    window.addEventListener("storage", sync);
-    window.addEventListener("gameon:change", sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("gameon:change", sync);
-    };
-  }, []);
+  // Estado compartido (Firestore): se actualiza solo en todos los dispositivos
+  const { on: activo, ready } = useGameOn();
 
   // si está apagado, limpiá el lastGamePage
   useEffect(() => {
-    if (!activo) localStorage.removeItem("lastGamePage");
-  }, [activo]);
+    if (ready && !activo) localStorage.removeItem("lastGamePage");
+  }, [activo, ready]);
 
   const comenzar = async () => {
     try {
@@ -63,7 +41,7 @@ export default function Bienvenida() {
     <div className="bienvenida-background overf bienvenidaCenter">
       <Header />
 
-      {/* Si juego APAGADO → solo el aviso */}
+      {/* Si juego APAGADO (o todavía cargando) → solo el aviso */}
       {!activo && (
         <p className="desactivado" style={{ fontSize: "1.2em", opacity: 0.8 }}>
           El juego comenzará en breve
